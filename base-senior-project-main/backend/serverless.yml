@@ -1,4 +1,6 @@
-service: senior-project-template
+org: risenonetimesheet
+app: risenone
+service: timesheet
 
 provider:
   name: aws
@@ -30,6 +32,3 @@ functions:
           path: login
           method: post
           cors: true
-
-  
-
