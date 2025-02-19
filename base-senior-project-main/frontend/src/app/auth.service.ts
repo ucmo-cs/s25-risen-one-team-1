@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -8,11 +8,23 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   constructor(private http: HttpClient,private router: Router) { }
-
+  private loginUrl = 'https://5t3z2kbt0i.execute-api.us-east-1.amazonaws.com/dev/login';
+  
   login(username: string, password: string): Observable<boolean> {
-    // Your login logic with Lambda function
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+    // Your login logic with Lambda function here 
+    console.log("login");
     // Simulating success for demonstration purposes
-    const loginSuccess = true;
+    var loginSuccess = false;
+    this.http.post<any>(this.loginUrl, { username: "username1", password: "password1"}, {headers}).subscribe(
+      res => {
+        //console.log(res);
+        //if (res.statusCode === 200)
+          //  loginSuccess = true;
+      }
+    );
     
     return new Observable<boolean>((observer) => {
       if (loginSuccess) {
