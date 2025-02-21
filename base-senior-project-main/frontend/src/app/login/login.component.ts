@@ -83,12 +83,12 @@ export class LoginComponent {
             this.router.navigate(['/home']);
           } else {
             // Handle login failure
-            console.error('Login failed');
+            console.error('-Login failed');
           }
         },
         error: (error) => {
           // Handle login error
-          console.error('Login error:', error);
+          console.error('-Login error:', error);
         }
       });
   }

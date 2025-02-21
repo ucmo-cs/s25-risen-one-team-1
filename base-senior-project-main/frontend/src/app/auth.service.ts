@@ -8,23 +8,20 @@ import { Router } from '@angular/router';
 })
 export class AuthService {
   constructor(private http: HttpClient,private router: Router) { }
-  private loginUrl = 'https://5t3z2kbt0i.execute-api.us-east-1.amazonaws.com/dev/login';
+  private loginUrl = 'https://dou6dqw5wa.execute-api.us-east-1.amazonaws.com/login';
   
   login(username: string, password: string): Observable<boolean> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
     // Your login logic with Lambda function here 
-    console.log("login");
-    // Simulating success for demonstration purposes
     var loginSuccess = false;
-    this.http.post<any>(this.loginUrl, { username: "username1", password: "password1"}, {headers}).subscribe(
-      res => {
-        //console.log(res);
-        //if (res.statusCode === 200)
-          //  loginSuccess = true;
-      }
-    );
+    this.http.post<any>((this.loginUrl), { username: "username1", password: "password1"}).subscribe();
+     
+    // fetch(this.loginUrl, { method: 'POST', body: {{ username: "user", password: "pass" }} })
+    // .then(response => response.json());
+
+
     
     return new Observable<boolean>((observer) => {
       if (loginSuccess) {

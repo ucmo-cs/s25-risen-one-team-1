@@ -6,6 +6,8 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
+  httpApi:
+    cors: true
 
 plugins:
   - serverless-offline
@@ -28,7 +30,6 @@ functions:
   login:
     handler: src/handlers/login.handler
     events:
-      - http:
-          path: login
+      - httpApi:
+          path: /login
           method: post
-          cors: true
