@@ -12,16 +12,19 @@ export class AuthService {
   
   login(username: string, password: string): Observable<boolean> {
     const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
+      'content-type': 'application/json'
     });
     // Your login logic with Lambda function here 
     var loginSuccess = false;
-    this.http.post<any>((this.loginUrl), { username: "username1", password: "password1"}).subscribe();
-     
-    // fetch(this.loginUrl, { method: 'POST', body: {{ username: "user", password: "pass" }} })
-    // .then(response => response.json());
-
-
+    this.http.post<any>((this.loginUrl), { username: "user", password: "pass"}).subscribe(
+      response => {
+        console.log(response);
+        if(response.message == "Login successful"){
+          loginSuccess = true;
+          console.log("Client logged in");
+        }
+      }
+    );
     
     return new Observable<boolean>((observer) => {
       if (loginSuccess) {
