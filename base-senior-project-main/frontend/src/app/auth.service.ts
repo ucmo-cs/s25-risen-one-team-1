@@ -14,26 +14,17 @@ export class AuthService {
     const headers = new HttpHeaders({
       'content-type': 'application/json'
     });
-    // Your login logic with Lambda function here 
-    var loginSuccess = false;
-    this.http.post<any>((this.loginUrl), { username: "user", password: "pass"}).subscribe(
-      response => {
-        console.log(response);
+    //httpclient in angular returns an observable, which we can just 
+    //return true or false to the subscriber based on if the login was successful
+    //the subscriber to this(login.component.ts) handles the true or false result
+    return this.http.post<any>((this.loginUrl), { username: username,  password: password}).pipe(
+      map(response => {
         if(response.message == "Login successful"){
-          loginSuccess = true;
-          console.log("Client logged in");
+          return true; //notify the subscriber that login was successful
+        }else{
+          return false;//notify subscriber login failed
         }
-      }
-    );
-    
-    return new Observable<boolean>((observer) => {
-      if (loginSuccess) {
-        observer.next(true); // Notify subscribers that login was successful
-        observer.complete(); // Complete the observable
-      } else {
-        observer.error('Login failed'); // Notify subscribers that login failed
-      }
-    });
+      }));
   }
 
   logout() {
