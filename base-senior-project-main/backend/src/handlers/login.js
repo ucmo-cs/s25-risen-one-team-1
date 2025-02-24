@@ -2,10 +2,8 @@
 
 const AWS = require('aws-sdk');
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
 module.exports.handler = async (event) => {
   const requestBody = JSON.parse(event.body);
-
   const params = {
     TableName: process.env.USERS_TABLE,
     Key: {
@@ -31,7 +29,7 @@ module.exports.handler = async (event) => {
     console.error('Error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: 'Internal server error' })
+      body: JSON.stringify({ message: 'Internal server error---' })
     };
   }
 };

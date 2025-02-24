@@ -73,7 +73,8 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) { }
 
-  login() {
+  login(event: Event) {
+    event.preventDefault(); // Prevent the form from submitting
     this.authService.login(this.username, this.password)
       .subscribe({
         next: (success) => {
@@ -82,12 +83,12 @@ export class LoginComponent {
             this.router.navigate(['/home']);
           } else {
             // Handle login failure
-            console.error('Login failed');
+            console.error('-Login failed');
           }
         },
         error: (error) => {
           // Handle login error
-          console.error('Login error:', error);
+          console.error('-Login error:', error);
         }
       });
   }
