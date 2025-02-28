@@ -220,3 +220,6 @@ Keep branches short-lived to avoid divergence.
 - DynamoDB: Reads from or writes to the database.
 - Response: The Lambda function sends back a response via API Gateway to the Angular application.
 - Data Handling: The Angular service receives this data and updates the component's view accordingly.
+
+## Extra Dependencies Needed:
+- npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction --save
