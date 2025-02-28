@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { EdwComponent } from './edw.component';
+import { FormsModule } from '@angular/forms';
 
-import { HomeComponent } from './home.component';
-
-describe('HomeComponent', () => {
-  let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
+describe('EdwComponent', () => {
+  let component: EdwComponent;
+  let fixture: ComponentFixture<EdwComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HomeComponent]
+      declarations: [ EdwComponent ],
+      imports: [ FormsModule ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HomeComponent);
+    fixture = TestBed.createComponent(EdwComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
