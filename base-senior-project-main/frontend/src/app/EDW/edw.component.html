@@ -1,44 +1,31 @@
 <div class="edw-container">
   <h1>Employee Data Warehouse</h1>
 
-  <!-- Month Selector -->
-  <div class="month-selector">
-    <label for="month">Select Month:</label>
-    <input type="month" id="month" [(ngModel)]="selectedMonth" />
+  <div class="view-selector">
+    <label>Select Date:</label>
+    <input type="date" [(ngModel)]="selectedDate" (change)="getAggregatedData()">
+
+    <label>View:</label>
+    <select [(ngModel)]="selectedView" (change)="getAggregatedData()">
+      <option value="week">Weekly View</option>
+      <option value="month">Monthly View</option>
+    </select>
   </div>
 
-  <!-- Table Display -->
   <table>
     <thead>
     <tr>
-      <th>Project Name</th>
       <th>Employee Name</th>
-      <th>Hours Worked</th>
       <th>Role</th>
+      <th>Total Hours Worked</th>
     </tr>
     </thead>
     <tbody>
-    <!-- Loop through projects for the selected month -->
-    <ng-container *ngFor="let project of getFilteredProjects(); let i = index">
-      <tr [class.even-project]="i % 2 === 0" [class.odd-project]="i % 2 !== 0">
-        <!-- Project Name spans across all employee rows -->
-        <td [attr.rowspan]="project.employees.length">{{ project.name }}</td>
-
-        <!-- First Employee Row -->
-        <td>{{ project.employees[0].name }}</td>
-        <td>{{ project.employees[0].hours }}</td>
-        <td>{{ project.employees[0].role }}</td>
-      </tr>
-
-      <!-- Remaining Employee Rows -->
-      <tr *ngFor="let emp of project.employees.slice(1)"
-          [class.even-project]="i % 2 === 0"
-          [class.odd-project]="i % 2 !== 0">
-        <td>{{ emp.name }}</td>
-        <td>{{ emp.hours }}</td>
-        <td>{{ emp.role }}</td>
-      </tr>
-    </ng-container>
+    <tr *ngFor="let emp of getAggregatedData()">
+      <td>{{ emp.name }}</td>
+      <td>{{ emp.role }}</td>
+      <td>{{ emp.totalHours }}</td>
+    </tr>
     </tbody>
   </table>
 </div>

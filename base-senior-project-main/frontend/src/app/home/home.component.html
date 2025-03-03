@@ -1,9 +1,14 @@
-<div class="container">
-  <h1>Employee Portal Calendar</h1>
+<div class="home-container">
+  <h1>Project Calendar</h1>
 
-  <div class="calendar-container">
-    <full-calendar
-      [options]="calendarOptions">
-    </full-calendar>
+  <!-- FullCalendar -->
+  <full-calendar [options]="calendarOptions"></full-calendar>
+
+  <!-- Project Work Details -->
+  <div *ngIf="selectedProject" class="project-details">
+    <h2>{{ selectedProject.name }}</h2>
+    <p><strong>Role:</strong> {{ selectedProject.role }}</p>
+    <p><strong>Hours Worked:</strong> {{ selectedProject.hours }}</p>
+    <button (click)="selectedProject = null" class="close-button">Close</button>
   </div>
 </div>

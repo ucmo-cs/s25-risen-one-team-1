@@ -1,42 +1,67 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { provideNativeDateAdapter } from '@angular/material/core';
-
-// FullCalendar Imports
+import { Component, OnInit } from '@angular/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions } from '@fullcalendar/core';
+import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
+import { MockDatabaseService } from '../mock-database/mock-database.service';
+
+// Import the defined interfaces
+interface WorkSession {
+date: string;
+hours: number;
+}
+
+interface Employee {
+name: string;
+role: string;
+workSessions: WorkSession[];
+}
+
+interface Project {
+name: string;
+employees: Employee[];
+}
 
 @Component({
-selector: 'app-form',
-providers: [provideNativeDateAdapter()],
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+selector: 'app-home',
+templateUrl: './home.component.html',
+styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
-  constructor(private router: Router) {}
+export class HomeComponent implements OnInit {
+selectedProject: any = null;
+projects: Project[] = [];
+calendarEvents: any[] = [];
 
-  ngOnInit() {}
+constructor(private mockDb: MockDatabaseService) {}
 
-  signIn() {
-    this.router.navigate(['/login']);
+  ngOnInit() {
+    this.loadProjects();
   }
 
-  // U.S. Federal Holidays
-  federalHolidays = [
-    { date: '2025-01-01', name: "New Year's Day" },
-    { date: '2025-01-20', name: "Martin Luther King Jr. Day" },
-    { date: '2025-02-17', name: "Presidents' Day" },
-    { date: '2025-05-26', name: "Memorial Day" },
-    { date: '2025-07-04', name: "Independence Day" },
-    { date: '2025-09-01', name: "Labor Day" },
-    { date: '2025-10-13', name: "Columbus Day" },
-    { date: '2025-11-11', name: "Veterans Day" },
-    { date: '2025-11-27', name: "Thanksgiving Day" },
-    { date: '2025-12-25', name: "Christmas Day" }
-  ];
+  loadProjects() {
+    this.projects = this.mockDb.getProjects();
+    this.updateCalendarEvents();
+  }
 
-  // FullCalendar Configuration
+  updateCalendarEvents() {
+    this.calendarEvents = [];
+
+    // Iterate through projects and employees to create events for each work session
+    this.projects.forEach((proj: Project) => {
+      proj.employees.forEach((emp: Employee) => {
+        emp.workSessions.forEach((session: WorkSession) => {
+          this.calendarEvents.push({
+            title: `${proj.name} - ${emp.name}`,
+            start: session.date,
+            extendedProps: { role: emp.role, hours: session.hours }
+          });
+        });
+      });
+    });
+
+    // Update calendar
+    this.calendarOptions.events = this.calendarEvents;
+  }
+
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
@@ -46,36 +71,16 @@ export class HomeComponent {
       right: 'dayGridMonth,dayGridWeek,dayGridDay'
     },
     selectable: true,
-    editable: true,
-    events: [],
-    dayCellDidMount: (info) => {
-      const dateStr = info.date.toISOString().split('T')[0];
-      const day = info.date.getDay();
-
-      if (day === 0 || day === 6) {
-        // Weekends (Saturday & Sunday) - Dark Gray
-        info.el.style.backgroundColor = '#a0a0a0';
-      }
-      this.federalHolidays.forEach(holiday => {
-        if (holiday.date === dateStr) {
-          // Federal Holidays - Light Gray
-          info.el.style.backgroundColor = '#d3d3d3';
-          const holidayLabel = document.createElement('div');
-          holidayLabel.style.fontSize = '12px';
-          holidayLabel.style.color = 'black';
-          holidayLabel.style.textAlign = 'center';
-          holidayLabel.style.padding = '2px';
-          holidayLabel.style.borderRadius = '4px';
-          holidayLabel.style.position = 'absolute';
-          holidayLabel.style.bottom = '5px';
-          holidayLabel.style.left = '50%';
-          holidayLabel.style.transform = 'translateX(-50%)';
-          holidayLabel.style.background = 'rgba(255, 255, 255, 0.8)';
-          holidayLabel.innerText = holiday.name;
-          info.el.appendChild(holidayLabel);
-          info.el.style.position = 'relative';
-        }
-      });
-    }
+    editable: false,
+    events: this.calendarEvents, // Dynamically updated from database
+    eventClick: this.handleEventClick.bind(this)
   };
+
+  handleEventClick(info: EventClickArg) {
+    this.selectedProject = {
+      name: info.event.title,
+      role: info.event.extendedProps['role'],
+      hours: info.event.extendedProps['hours']
+    };
+  }
 }

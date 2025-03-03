@@ -10,7 +10,7 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { LayoutModule } from '@angular/cdk/layout';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-// Material Form Controls
+// Material Modules
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -20,13 +20,9 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-
-// Material Navigation
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
-
-// Material Layout
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -35,8 +31,6 @@ import { MatListModule } from '@angular/material/list';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
-
-// Material Buttons & Indicators
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatBadgeModule } from '@angular/material/badge';
@@ -45,14 +39,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRippleModule } from '@angular/material/core';
-
-// Material Popups & Modals
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-// Material Data tables
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
@@ -64,9 +54,12 @@ import { EdwComponent } from './edw/edw.component';
 import { AppRoutingModule } from './app.routes';
 import { LoginComponent } from './login/login.component';
 
-// --- FullCalendar Imports (NEW) ---
-import { FullCalendarModule } from '@fullcalendar/angular'; // FullCalendar module for calendar functionality
-import dayGridPlugin from '@fullcalendar/daygrid'; // Plugin to enable full-month calendar view
+// FullCalendar Imports
+import { FullCalendarModule } from '@fullcalendar/angular';
+import dayGridPlugin from '@fullcalendar/daygrid';
+
+// Mock Database Service
+import { MockDatabaseService } from './mock-database/mock-database.service';
 
 @NgModule({
 declarations: [
@@ -76,10 +69,8 @@ HomeComponent,
 SidenavComponent,
 LoginComponent,
 AppComponent,
-EdwComponent // Added EdwComponent to declarations
+EdwComponent
 ],
-exports: [],
-bootstrap: [AppComponent],
 imports: [
 BrowserModule,
 LayoutModule,
@@ -122,15 +113,14 @@ MatTooltipModule,
 MatPaginatorModule,
 MatSortModule,
 MatTableModule,
-FormsModule,
-ReactiveFormsModule,
 AppRoutingModule,
-FullCalendarModule // --- (NEW) Added FullCalendarModule to enable the calendar ---
+FullCalendarModule
+],
+providers: [
+provideHttpClient(withInterceptorsFromDi()),
+    MockDatabaseService
   ],
-  providers: [
-    MatSnackBar,
-    provideHttpClient(withInterceptorsFromDi()),
-  ],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA] // Added CUSTOM_ELEMENTS_SCHEMA to fix unknown component errors
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
