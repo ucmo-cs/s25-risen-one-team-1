@@ -1,16 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
 selector: 'app-edw',
 templateUrl: './edw.component.html',
 styleUrls: ['./edw.component.css']
 })
-export class EdwComponent {
+
+export class EdwComponent implements OnInit{
 selectedMonth: string = new Date().toISOString().slice(0, 7); // Default to current month
 
 // Preset project data (mock database)
 projects = [
-{ name: "Rizen-One-Project", date: "2025-03-05", employees: [
+{ name: "Risen-One-Project", date: "2025-03-05", employees: [
 { name: "Tanner", hours: 20, role: "Scrum Peasant" },
 { name: "Austin", hours: 15, role: "Scrum Lord" },
 { name: "Strazzinator", hours: 30, role: "DAWG" } ,
@@ -48,4 +51,44 @@ getFilteredProjects() {
   getAllProjects() {
     return this.projects;
   }
+
+  @ViewChild('invoice') invoiceElement!: ElementRef;
+  constructor() { }
+
+  ngOnInit(): void {
+  }
+
+  public generatePDF(): void {
+    const edwElement = document.querySelector('table') as HTMLElement;
+
+    if (!edwElement) {
+      console.error('Error: EDW container element not found.');
+      return;
+    }
+
+    html2canvas(edwElement, {
+      scale: 2,
+      scrollX: -window.scrollX,
+      scrollY: -window.scrollY,
+      useCORS: true // Ensures cross-origin images are handled
+    })
+      .then((canvas) => {
+        const image = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'mm',
+          format: 'a4'
+        });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        pdf.addImage(image, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save('Timesheet.pdf');
+      })
+      .catch((error) => {
+        console.error('Error generating PDF:', error);
+      });
+  }
+
 }
