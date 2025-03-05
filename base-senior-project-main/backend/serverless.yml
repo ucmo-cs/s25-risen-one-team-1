@@ -40,3 +40,9 @@ functions:
       - httpApi:
           path: /getUser/{username}
           method: get
+  createProject: 
+    handler: src/handlers/createProject.handler
+    events:
+      - httpApi:
+          path: /createProject
+          method: post
