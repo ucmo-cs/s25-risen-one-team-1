@@ -34,3 +34,9 @@ functions:
       - httpApi:
           path: /login
           method: post
+  getUser:
+    handler: src/handlers/getUser.handler
+    events:
+      - httpApi:
+          path: /getUser/{username}
+          method: get

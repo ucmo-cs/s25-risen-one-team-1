@@ -2,69 +2,41 @@
   height: 100px;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Evenly spaces elements */
   color: #fff;
   background-color: black;
+  padding: 0 20px;
 }
 
-.verticle-alignment-helper {
-  display: inline-block;
-  height: 100%;
-  vertical-align: middle;
-}
-
-.profile-picture {
-  width: 40px;
-  height: 40px;
+.logo-container {
+  display: flex;
+  align-items: center;
 }
 
 #roc-logo {
-  margin-right: auto;
-  overflow: hidden;
   width: 150px;
   height: 150px;
   cursor: pointer;
 }
 
-h3 {
-  font-size: 24px;
-  font-weight: bold;
-}
-
-.hamburger-icon {
-  cursor: pointer;
-  margin-left: 10px;
-}
-
-.head-bg {
-  position: relative;
+.header-text {
+  flex-grow: 1;  /* Allows the text to center properly */
+  text-align: center;
 }
 
 .header-right {
-  margin-left: auto;
   display: flex;
-  justify-content: center;
   align-items: center;
-  margin-right: 20px;
 }
 
-.hamburger-container {
-  height: 100%;
-}
-
+/* Responsive Fix */
 @media screen and (max-width: 575px) {
   .header-container .header-text {
     display: none;
   }
 
   #roc-logo {
-    margin-right: auto;
     height: 70px;
     width: 70px;
   }
-}
-
-button.mat-mdc-menu-item {
-  height: 35px !important;
-  display: flex;
-  align-items: center;
 }
