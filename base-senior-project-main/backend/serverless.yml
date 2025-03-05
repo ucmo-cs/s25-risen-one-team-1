@@ -46,3 +46,15 @@ functions:
       - httpApi:
           path: /createProject
           method: post
+  getProject:
+    handler: src/handlers/getProject.handler
+    events:
+      - httpApi:
+          path: /getProject/{ProjectID}
+          method: get
+  getAllProjects:
+    handler: src/handlers/getAllProjects.handler
+    events:
+      - httpApi:
+          path: /getAllProjects
+          method: get
