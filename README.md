@@ -224,10 +224,17 @@ Keep branches short-lived to avoid divergence.
 ## Extra Dependencies Needed:
 - npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction --save
 
-## Dynamo API Example Requests
-- POST - Create a new project
+## API Example Requests
+- ### CREATE / UPDATE - Create a new project, also updates a project if projectid already exists
+- URL/createProject Method: POST
+- Body:
 - - {
     "ProjectID": 3,
     "ProjectName": "3Test-Project",
-    "EmployeesID": [4, 5, 6]  
-}
+    "EmployeesID": [4, 5, 6]  }
+- ### READ - get project(s)
+- URL/getProject/{ProjectID} Method: GET Return: One project matching ProjectID
+- URL/getAllProjects Method: Get Return: All projects
+- ### DELETE - delete a project
+- URL/deleteProject/{ProjectID} Method: DELETE 
+
