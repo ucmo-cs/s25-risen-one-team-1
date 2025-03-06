@@ -41,20 +41,26 @@ functions:
           path: /getUser/{username}
           method: get
   createProject: 
-    handler: src/handlers/createProject.handler
+    handler: src/handlers/ProjectCRUD/createProject.handler
     events:
       - httpApi:
           path: /createProject
           method: post
   getProject:
-    handler: src/handlers/getProject.handler
+    handler: src/handlers/ProjectCRUD/getProject.handler
     events:
       - httpApi:
           path: /getProject/{ProjectID}
           method: get
   getAllProjects:
-    handler: src/handlers/getAllProjects.handler
+    handler: src/handlers/ProjectCRUD/getAllProjects.handler
     events:
       - httpApi:
           path: /getAllProjects
           method: get
+  deleteProject:
+    handler: src/handlers/ProjectCRUD/deleteProject.handler
+    events:
+      - httpApi:
+          path: /deleteProject/{ProjectID}
+          method: delete
