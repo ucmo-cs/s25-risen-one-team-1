@@ -225,3 +225,11 @@ Keep branches short-lived to avoid divergence.
 - npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction --save
 - npm install jspdf --save
 - npm i html2canvas --save
+- 
+## Dynamo API Example Requests
+- POST - Create a new project
+- - {
+    "ProjectID": 3,
+    "ProjectName": "3Test-Project",
+    "EmployeesID": [4, 5, 6]  
+}
