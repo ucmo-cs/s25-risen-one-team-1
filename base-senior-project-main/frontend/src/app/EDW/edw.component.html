@@ -18,22 +18,14 @@
     </tr>
     </thead>
     <tbody>
-    <!-- Loop through projects for the selected month -->
     <ng-container *ngFor="let project of getFilteredProjects(); let i = index">
       <tr [class.even-project]="i % 2 === 0" [class.odd-project]="i % 2 !== 0">
-        <!-- Project Name spans across all employee rows -->
         <td [attr.rowspan]="project.employees.length">{{ project.name }}</td>
-
-        <!-- First Employee Row -->
         <td>{{ project.employees[0].name }}</td>
         <td>{{ project.employees[0].hours }}</td>
         <td>{{ project.employees[0].role }}</td>
       </tr>
-
-      <!-- Remaining Employee Rows -->
-      <tr *ngFor="let emp of project.employees.slice(1)"
-          [class.even-project]="i % 2 === 0"
-          [class.odd-project]="i % 2 !== 0">
+      <tr *ngFor="let emp of project.employees.slice(1)" [class.even-project]="i % 2 === 0" [class.odd-project]="i % 2 !== 0">
         <td>{{ emp.name }}</td>
         <td>{{ emp.hours }}</td>
         <td>{{ emp.role }}</td>
@@ -41,4 +33,6 @@
     </ng-container>
     </tbody>
   </table>
+
+  <button class="button-85" role="button" (click)="generatePDF()">Generate PDF</button>
 </div>

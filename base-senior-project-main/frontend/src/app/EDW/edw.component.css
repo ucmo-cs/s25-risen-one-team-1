@@ -1,28 +1,43 @@
-/* Center the entire EDW page */
+/* ===========================
+   General Page Styling
+   =========================== */
+
+/* Center and Adjust the Main Container */
 .edw-container {
   width: 90%;
   max-width: 1200px;
-  margin: 20px auto;
+  margin: 20px auto; /* Center the container */
   text-align: center;
-  background-color: white;
+  background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+  border-radius: 15px;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
 }
 
-/* Style the heading */
+/* ===========================
+   Header Styling
+   =========================== */
+
 h1 {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: bold;
   margin-bottom: 20px;
   color: #333;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Month Selector Formatting */
+/* ===========================
+   Month Selector Styling
+   =========================== */
+
 .month-selector {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap; /* Adjusts layout for smaller screens */
   gap: 10px;
   margin-bottom: 20px;
 }
@@ -40,9 +55,12 @@ input[type="month"] {
   border-radius: 5px;
   background-color: #f7f7f7;
   color: #333;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
 }
+/* ===========================
+   Table Styling with Sticky First Column
+   =========================== */
 
-/* Table Styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -51,6 +69,8 @@ table {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid #ddd;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+  table-layout: auto; /* Ensures flexible column widths */
 }
 
 /* Table Headers */
@@ -61,23 +81,37 @@ th {
   padding: 12px;
   text-align: center;
   border: 1px solid #ddd;
+  position: sticky;
+  top: 0; /* Keeps the headers in view when scrolling vertically */
+  z-index: 2;
 }
 
 /* Table Rows */
 td {
   border: 1px solid #ddd;
-  padding: 12px;
+  padding: 10px;
   text-align: center;
   font-size: 14px;
   color: #333;
+  white-space: nowrap; /* Prevents text wrapping */
 }
 
-/* Alternate project background colors */
-.even-project {
-  background-color: #f9f9f9; /* Light gray */
+/* Sticky First Column */
+th:first-child,
+td:first-child {
+  position: sticky;
+  left: 0;
+  background-color: #f0f0f0; /* Ensure the column stays visible */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Add slight shadow for separation */
+  z-index: 3; /* Ensure it stays on top of other content */
 }
 
-.odd-project {
+/* Alternate Row Colors */
+tbody tr:nth-child(even) {
+  background-color: #f0f0f0; /* Light gray */
+}
+
+tbody tr:nth-child(odd) {
   background-color: #eaeaea; /* Slightly darker gray */
 }
 
@@ -87,9 +121,106 @@ tbody tr:hover {
   transition: background-color 0.3s ease;
 }
 
-/* Responsive Design */
+
+/* Hover Effect on Rows */
+tbody tr:hover {
+  background-color: #e0e0e0;
+  transition: background-color 0.3s ease;
+}
+
+/* ===========================
+   Button Styling
+   =========================== */
+
+.button-85 {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: #fff;
+  background: linear-gradient(45deg, #ff6b6b, #f06595);
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  touch-action: manipulation;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  transition: background 0.3s ease;
+}
+
+/* Hover Effect */
+.button-85:hover {
+  background: linear-gradient(45deg, #f06595, #ff6b6b);
+}
+
+/* Glowing Effect */
+.button-85:before {
+  content: "";
+  background: linear-gradient(
+    45deg,
+    #ff0000,
+    #ff7300,
+    #fffb00,
+    #48ff00,
+    #00ffd5,
+    #002bff,
+    #7a00ff,
+    #ff00c8,
+    #ff0000
+  );
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-button-85 20s linear infinite;
+  transition: opacity 1.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.button-85:after {
+  z-index: -1;
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: black;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}
+
+/* ===========================
+   Responsive Design
+   =========================== */
+
+@media (max-width: 1024px) {
+  .edw-container {
+    width: 95%; /* Adjust width for medium screens */
+    padding: 25px;
+  }
+}
+
 @media (max-width: 768px) {
   .edw-container {
+    width: 98%; /* Adjust width for smaller screens */
     padding: 20px;
   }
 
@@ -97,7 +228,8 @@ tbody tr:hover {
     font-size: 14px;
   }
 
-  th, td {
+  th,
+  td {
     padding: 8px;
   }
 
@@ -106,7 +238,7 @@ tbody tr:hover {
   }
 
   .month-selector {
-    flex-direction: column;
+    flex-direction: column; /* Stack elements for small screens */
   }
 
   input[type="month"] {
