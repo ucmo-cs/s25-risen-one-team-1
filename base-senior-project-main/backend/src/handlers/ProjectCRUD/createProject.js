@@ -27,7 +27,7 @@ module.exports.handler = async (event) => {
 
     if(!ProjectID || !ProjectName || !EmployeesID){//if one of these is empty, return bad request
         return {
-            statuscode: 400,//400: bad request
+            statusCode: 400,//400: bad request
             body: JSON.stringify("Bad Request, missing attributes in body.")
         }
     }
@@ -46,7 +46,7 @@ module.exports.handler = async (event) => {
         }
     }catch (e) {
         return {
-            statuscode: 500,//400: bad request
+            statusCode: 500,//400: bad request
             body: JSON.stringify("Internal server error: " + e)
         }
     }

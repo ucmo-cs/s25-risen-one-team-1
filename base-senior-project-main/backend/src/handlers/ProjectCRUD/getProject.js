@@ -2,6 +2,7 @@
 /*Used for getting specific project in projects table
 URL/getProject/{ProjectID}
 *400: missing projectid in path*
+*404: project with projectid not found*
 *200: good request/items returned*
 *500: error*
 */
