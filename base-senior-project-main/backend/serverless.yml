@@ -64,3 +64,27 @@ functions:
       - httpApi:
           path: /deleteProject/{ProjectID}
           method: delete
+  createEmployee: 
+    handler: src/handlers/EmployeeCRUD/createEmployee.handler
+    events:
+      - httpApi:
+          path: /createEmployee
+          method: post
+  getEmployee:
+    handler: src/handlers/EmployeeCRUD/getEmployee.handler
+    events:
+      - httpApi:
+          path: /getEmployee/{EmployeeID}
+          method: get
+  getAllEmployees:
+    handler: src/handlers/EmployeeCRUD/getAllEmployees.handler
+    events:
+      - httpApi:
+          path: /getAllEmployees
+          method: get
+  deleteEmployee:
+    handler: src/handlers/EmployeeCRUD/deleteEmployee.handler
+    events:
+      - httpApi:
+          path: /deleteEmployee/{EmployeeID}
+          method: delete
