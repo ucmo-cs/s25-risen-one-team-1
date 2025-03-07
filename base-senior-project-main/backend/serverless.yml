@@ -88,3 +88,27 @@ functions:
       - httpApi:
           path: /deleteEmployee/{EmployeeID}
           method: delete
+  createDay: 
+    handler: src/handlers/DayCRUD/createDay.handler
+    events:
+      - httpApi:
+          path: /createDay
+          method: post
+  getDay:
+    handler: src/handlers/DayCRUD/getDay.handler
+    events:
+      - httpApi:
+          path: /getDay/{Date}
+          method: get
+  getAllDays:
+    handler: src/handlers/DayCRUD/getAllDays.handler
+    events:
+      - httpApi:
+          path: /getAllDays
+          method: get
+  deleteDay:
+    handler: src/handlers/DayCRUD/deleteDay.handler
+    events:
+      - httpApi:
+          path: /deleteDay/{Date}
+          method: delete
