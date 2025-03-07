@@ -1,4 +1,19 @@
-<mat-nav-list class="sidenav-container">
+<mat-icon [matMenuTriggerFor] = "burger" class="hamburger-icon">menu</mat-icon>
+<mat-menu #burger="matMenu">
+
   <mat-list-item [routerLink]="'/home'">Home</mat-list-item>
   <mat-list-item [routerLink]="'/edw'">Employee Data Warehouse</mat-list-item>
-</mat-nav-list>
+</mat-menu>
+
+
+<!This keeps it functioning right and it just add another part to the list>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened="true">
+    <mat-nav-list>
+      <mat-list-item [routerLink]="'/home'">Home</mat-list-item>
+      <mat-list-item [routerLink]="'/edw'">Employee Data Warehouse</mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+  </mat-sidenav-content>
+</mat-sidenav-container>

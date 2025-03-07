@@ -63,10 +63,11 @@ import { HomeComponent } from './home/home.component';
 import { EdwComponent } from './edw/edw.component';
 import { AppRoutingModule } from './app.routes';
 import { LoginComponent } from './login/login.component';
+import {AccountComponent} from './account/account.component'; // Plugin to enable full-month calendar view
+
 
 // --- FullCalendar Imports (NEW) ---
 import { FullCalendarModule } from '@fullcalendar/angular'; // FullCalendar module for calendar functionality
-import dayGridPlugin from '@fullcalendar/daygrid'; // Plugin to enable full-month calendar view
 
 @NgModule({
 declarations: [
@@ -76,6 +77,7 @@ HomeComponent,
 SidenavComponent,
 LoginComponent,
 AppComponent,
+AccountComponent, // Added AccountComponent to declarations
 EdwComponent // Added EdwComponent to declarations
 ],
 exports: [],
