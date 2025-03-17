@@ -1,38 +1,50 @@
 <div class="edw-container">
-  <h1>Employee Data Warehouse</h1>
+  <h1>Employee Data Warehouse (EDW)</h1>
 
-  <!-- Month Selector -->
-  <div class="month-selector">
-    <label for="month">Select Month:</label>
-    <input type="month" id="month" [(ngModel)]="selectedMonth" />
+  <!-- Sort Selection -->
+  <div class="sort-container">
+    <label for="sortBy">Sort By:</label>
+    <select id="sortBy" [(ngModel)]="sortBy" (change)="onSortChange()">
+      <option value="week">Week</option>
+      <option value="month">Month</option>
+    </select>
   </div>
 
-  <!-- Table Display -->
-  <table>
-    <thead>
-    <tr>
-      <th>Project Name</th>
-      <th>Employee Name</th>
-      <th>Hours Worked</th>
-      <th>Role</th>
-    </tr>
-    </thead>
-    <tbody>
-    <ng-container *ngFor="let project of getFilteredProjects(); let i = index">
-      <tr [class.even-project]="i % 2 === 0" [class.odd-project]="i % 2 !== 0">
-        <td [attr.rowspan]="project.employees.length">{{ project.name }}</td>
-        <td>{{ project.employees[0].name }}</td>
-        <td>{{ project.employees[0].hours }}</td>
-        <td>{{ project.employees[0].role }}</td>
-      </tr>
-      <tr *ngFor="let emp of project.employees.slice(1)" [class.even-project]="i % 2 === 0" [class.odd-project]="i % 2 !== 0">
-        <td>{{ emp.name }}</td>
-        <td>{{ emp.hours }}</td>
-        <td>{{ emp.role }}</td>
-      </tr>
-    </ng-container>
-    </tbody>
-  </table>
+  <!-- Inner Container for the Table -->
+  <div class="inner-container" #innerContainer>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-  <button class="button-85" role="button" (click)="generatePDF()">Generate PDF</button>
+      <!-- Project Name Column -->
+      <ng-container matColumnDef="projectName">
+        <th mat-header-cell *matHeaderCellDef> Project Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.projectName}} </td>
+      </ng-container>
+
+      <!-- Employee Name Column -->
+      <ng-container matColumnDef="employeeName">
+        <th mat-header-cell *matHeaderCellDef> Employee Name </th>
+        <td mat-cell *matCellDef="let element"> {{element.employeeName}} </td>
+      </ng-container>
+
+      <!-- Project ID Column -->
+      <ng-container matColumnDef="projectId">
+        <th mat-header-cell *matHeaderCellDef> Project ID </th>
+        <td mat-cell *matCellDef="let element"> {{element.projectId}} </td>
+      </ng-container>
+
+      <!-- Total Hours Column -->
+      <ng-container matColumnDef="totalHours">
+        <th mat-header-cell *matHeaderCellDef> Total Hours </th>
+        <td mat-cell *matCellDef="let element"> {{element.totalHours}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+
+  <!-- Export to PDF Button Centered -->
+  <div class="button-container">
+    <button class="button-85" (click)="generatePDF()">Export to PDF</button>
+  </div>
 </div>
