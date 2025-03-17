@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import {map, Observable} from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -18,12 +18,12 @@ export class AuthService {
     //httpclient in angular returns an observable, which we can just
     //return true or false to the subscriber based on if the login was successful
     //the subscriber to this(login.component.ts) handles the true or false result
-    return this.http.post<any>((this.loginUrl), {username: username,  password: password}).pipe(
+    return this.http.post<any>((this.loginUrl), { username: username,  password: password }).pipe(
       map(response => {
         if(response.message == "Login successful"){
           return true; //notify the subscriber that login was successful
         }else{
-          return false;//notify subscriber login failed
+          return false; //notify subscriber login failed
         }
       }));
   }
