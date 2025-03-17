@@ -1,9 +1,14 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+
+// API Imports
 import { getAllDays, Day } from '../utility/days';
+import { getAllEmployees, Employee } from '../utility/employee';
+import { getAllProjects, Project } from '../utility/projects';
 
 @Component({
   selector: 'app-form',
@@ -13,7 +18,9 @@ import { getAllDays, Day } from '../utility/days';
 export class HomeComponent implements OnInit {
   @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
-  events: any[] = [];
+  employees: Employee[] = [];
+  projects: Project[] = [];
+  days: Day[] = [];
 
   calendarOptions: any = {
     initialView: 'dayGridMonth',
@@ -23,49 +30,86 @@ export class HomeComponent implements OnInit {
       center: 'title',
       right: 'dayGridMonth,dayGridWeek,dayGridDay'
     },
-    selectable: true,
-    editable: true,
-    events: [] // Initialize as empty
+    events: [],
+    eventClick: this.handleEventClick.bind(this)
   };
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private dialog: MatDialog) {}
 
-  ngOnInit(): void {
-    this.loadCalendarEvents();
+  async ngOnInit(): Promise<void> {
+    await this.loadEventsToCalendar();
   }
 
-  async loadCalendarEvents(): Promise<void> {
+  async loadEventsToCalendar(): Promise<void> {
     try {
-      const apiEvents: Day[] = await getAllDays();
-      console.log('Raw API Events:', apiEvents);
+      // Load all API data in parallel
+      const [days, employees, projects] = await Promise.all([
+        getAllDays(),
+        getAllEmployees(),
+        getAllProjects()
+      ]);
 
-      this.events = apiEvents.map(event => ({
-        title: `Employee ${event.EmployeeID}: ${event.HoursWorked} hrs`,
-        start: this.convertDateFormat(event.date),
-        allDay: true,
-      }));
+      this.employees = employees;
+      this.projects = projects;
+      this.days = days;
 
-      console.log('Formatted Events for Calendar:', this.events);
+      const events = this.days.map(day => {
+        const employee = this.employees.find(emp => emp.EmployeeID === day.EmployeeID);
+        const project = this.projects.find(proj => proj.ProjectID === day.ProjectID);
 
-      // Refresh the calendar with new events
-      const calendarApi = this.calendarComponent.getApi();
-      calendarApi.removeAllEvents();
-      this.events.forEach(event => {
-        calendarApi.addEvent(event);
+        return {
+          title: `${project?.ProjectName || 'Unknown Project'}`,
+          start: this.convertDateFormat(day.date),
+          extendedProps: {
+            employeeName: employee?.EmployeeName || 'Unknown Employee',
+            hoursWorked: day.HoursWorked,
+            projectName: project?.ProjectName || 'Unknown Project'
+          }
+        };
       });
 
+      this.calendarOptions.events = events;
     } catch (error) {
       console.error('Error loading calendar events:', error);
     }
   }
 
+  handleEventClick(info: any): void {
+    const { employeeName, hoursWorked, projectName } = info.event.extendedProps;
+
+    this.dialog.open(EventDetailsDialog, {
+      data: {
+        projectName,
+        employeeName,
+        hoursWorked
+      }
+    });
+  }
+
   convertDateFormat(dateStr: string): string {
-    if (!dateStr) return '';
     const [month, day, year] = dateStr.split('-');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
 
-  signIn() {
+  signIn(): void {
     this.router.navigate(['/login']);
   }
+}
+
+@Component({
+  selector: 'event-details-dialog',
+  template: `
+    <h2 mat-dialog-title>Project Details</h2>
+    <mat-dialog-content>
+      <p><strong>Project:</strong> {{ data.projectName }}</p>
+      <p><strong>Employee:</strong> {{ data.employeeName }}</p>
+      <p><strong>Hours Worked:</strong> {{ data.hoursWorked }} hrs</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+  `
+})
+export class EventDetailsDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }

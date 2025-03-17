@@ -11,7 +11,7 @@ import { AppComponent } from './app.component';
 import { AppHeaderComponent } from './components/app-header/app-header.component';
 import { AppFooterComponent } from './components/app-footer/app-footer.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
-import { HomeComponent } from './home/home.component';
+import { HomeComponent, EventDetailsDialog } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { EdwComponent } from './edw/edw.component';
 
@@ -49,7 +49,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRippleModule } from '@angular/material/core';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule, MAT_DIALOG_DEFAULT_OPTIONS } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -64,7 +64,8 @@ import { MatTableModule } from '@angular/material/table';
     SidenavComponent,
     HomeComponent,
     LoginComponent,
-    EdwComponent
+    EdwComponent,
+    EventDetailsDialog
   ],
   imports: [
     BrowserModule,
@@ -114,7 +115,15 @@ import { MatTableModule } from '@angular/material/table';
     MatSortModule,
     MatTableModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: MAT_DIALOG_DEFAULT_OPTIONS,
+      useValue: {
+        hasBackdrop: true,
+        autoFocus: true
+      }
+    }
+  ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })

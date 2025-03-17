@@ -15,7 +15,7 @@ export class EdwComponent implements OnInit {
   projects: Project[] = [];
   employees: Employee[] = [];
   days: Day[] = [];
-  displayedColumns: string[] = ['projectName', 'employeeName', 'projectId'];
+  displayedColumns: string[] = ['projectName', 'employeeName', 'projectId', 'hoursWorked'];
   dataSource = new MatTableDataSource<any>();
   sortBy: string = 'month'; // Default sort option
 
@@ -36,14 +36,17 @@ export class EdwComponent implements OnInit {
   }
 
   updateTableData(): void {
-    const now = new Date();
     const mergedData = this.projects.flatMap(project => {
       return project.EmployeesID.map(employeeId => {
         const employee = this.employees.find(e => e.EmployeeID === employeeId);
+        const employeeDays = this.days.filter(day => day.EmployeeID === employeeId && day.ProjectID === project.ProjectID);
+        const totalHours = employeeDays.reduce((sum, day) => sum + day.HoursWorked, 0);
+
         return {
           projectName: project.ProjectName,
           projectId: project.ProjectID,
           employeeName: employee ? employee.EmployeeName : 'Unknown',
+          hoursWorked: totalHours
         };
       });
     });
