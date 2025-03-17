@@ -74,9 +74,8 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   login(event: Event) {
-    event.preventDefault(); // Prevent the form from submitting -- for debug->
-    //-> enabling this allows to see console errors from login form,->
-    //->but also disables the form validation popups
+    event.preventDefault(); // Prevents default JavaScript form submission ->
+    //-> also breaks the warning for empty username/password fields
     this.authService.login(this.username, this.password)
       .subscribe({
         next: (success) => {
