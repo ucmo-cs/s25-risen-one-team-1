@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions } from '@fullcalendar/core';
 import { getAllDays, Day } from '../utility/days';
 
 @Component({
@@ -11,7 +11,11 @@ import { getAllDays, Day } from '../utility/days';
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
-  calendarOptions: CalendarOptions = {
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
+
+  events: any[] = [];
+
+  calendarOptions: any = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
     headerToolbar: {
@@ -21,7 +25,7 @@ export class HomeComponent implements OnInit {
     },
     selectable: true,
     editable: true,
-    events: []
+    events: [] // Initialize as empty
   };
 
   constructor(private router: Router) {}
@@ -33,20 +37,30 @@ export class HomeComponent implements OnInit {
   async loadCalendarEvents(): Promise<void> {
     try {
       const apiEvents: Day[] = await getAllDays();
-      console.log('API Events:', apiEvents);
+      console.log('Raw API Events:', apiEvents);
 
-      const formattedEvents = apiEvents.map(event => ({
+      this.events = apiEvents.map(event => ({
         title: `Employee ${event.EmployeeID}: ${event.HoursWorked} hrs`,
-        date: this.convertDateFormat(event.date),
+        start: this.convertDateFormat(event.date),
+        allDay: true,
       }));
 
-      this.calendarOptions.events = formattedEvents;
+      console.log('Formatted Events for Calendar:', this.events);
+
+      // Refresh the calendar with new events
+      const calendarApi = this.calendarComponent.getApi();
+      calendarApi.removeAllEvents();
+      this.events.forEach(event => {
+        calendarApi.addEvent(event);
+      });
+
     } catch (error) {
       console.error('Error loading calendar events:', error);
     }
   }
 
   convertDateFormat(dateStr: string): string {
+    if (!dateStr) return '';
     const [month, day, year] = dateStr.split('-');
     return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
   }
