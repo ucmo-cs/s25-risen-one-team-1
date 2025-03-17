@@ -4,7 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { EdwComponent } from './edw/edw.component';
 import { NgModel } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import {AuthGuard} from "./auth.guard";
+import { AuthGuard } from "./auth.guard";
 
 export const routes: Routes = [
 { path: 'login', component: LoginComponent },
