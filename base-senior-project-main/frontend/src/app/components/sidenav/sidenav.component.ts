@@ -6,16 +6,23 @@ import { Component, OnInit, ViewChild } from '@angular/core';
   styleUrls: ['./sidenav.component.scss']
 })
 export class SidenavComponent implements OnInit {
-  admin: boolean = false;
-  lead: boolean = false;
-  tester: boolean = false;
-  pm: boolean = false;
-  
-  toggle = [false,false];
-
   constructor() {
   }
 
   ngOnInit() {}
+  admin: boolean = false;
+  lead: boolean = false;
+  tester: boolean = false;
+  pm: boolean = false;
+  isSidebarVisible: boolean = false;
+
+  toggleSidebar() {
+    this.isSidebarVisible = !this.isSidebarVisible;
+  }
+
+  toggle = [false,false];
+
+
 
 }
+

@@ -14,6 +14,7 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { HomeComponent, EventDetailsDialog } from './home/home.component';
 import { LoginComponent } from './login/login.component';
 import { EdwComponent } from './edw/edw.component';
+import { AccountComponent } from './account/account.component';
 
 // FullCalendar Module
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -65,7 +66,8 @@ import { MatTableModule } from '@angular/material/table';
     HomeComponent,
     LoginComponent,
     EdwComponent,
-    EventDetailsDialog
+    AccountComponent, // Merged AccountComponent
+    EventDetailsDialog, // Keeping the event dialog component
   ],
   imports: [
     BrowserModule,
@@ -75,7 +77,7 @@ import { MatTableModule } from '@angular/material/table';
     ReactiveFormsModule,
     HttpClientModule,
     AppRoutingModule,
-    FullCalendarModule,
+    FullCalendarModule, // FullCalendar module for calendar functionality
     LayoutModule,
 
     // Angular Material Modules

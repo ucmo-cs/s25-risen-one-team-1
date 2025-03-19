@@ -68,6 +68,20 @@ tbody tr:hover {
 
 .button-85:before {
   content: "";
+
+  background: linear-gradient(
+    45deg,
+    #00ffff,
+    #00ff00,
+    #ff00ff,
+    #ff0000,
+    #0000ff,
+    #00ffff,
+    #ff00ff,
+    #00ff00,
+    #00ffff
+  );
+
   position: absolute;
   top: -5px;
   left: -5px;
