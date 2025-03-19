@@ -74,8 +74,11 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) { }
 
   login(event: Event) {
+
+
     event.preventDefault(); // Prevents default JavaScript form submission ->
     //-> also breaks the warning for empty username/password fields
+
     this.authService.login(this.username, this.password)
       .subscribe({
         next: (success) => {
