@@ -40,3 +40,75 @@ functions:
       - httpApi:
           path: /getUser/{username}
           method: get
+  createProject: 
+    handler: src/handlers/ProjectCRUD/createProject.handler
+    events:
+      - httpApi:
+          path: /createProject
+          method: post
+  getProject:
+    handler: src/handlers/ProjectCRUD/getProject.handler
+    events:
+      - httpApi:
+          path: /getProject/{ProjectID}
+          method: get
+  getAllProjects:
+    handler: src/handlers/ProjectCRUD/getAllProjects.handler
+    events:
+      - httpApi:
+          path: /getAllProjects
+          method: get
+  deleteProject:
+    handler: src/handlers/ProjectCRUD/deleteProject.handler
+    events:
+      - httpApi:
+          path: /deleteProject/{ProjectID}
+          method: delete
+  createEmployee: 
+    handler: src/handlers/EmployeeCRUD/createEmployee.handler
+    events:
+      - httpApi:
+          path: /createEmployee
+          method: post
+  getEmployee:
+    handler: src/handlers/EmployeeCRUD/getEmployee.handler
+    events:
+      - httpApi:
+          path: /getEmployee/{EmployeeID}
+          method: get
+  getAllEmployees:
+    handler: src/handlers/EmployeeCRUD/getAllEmployees.handler
+    events:
+      - httpApi:
+          path: /getAllEmployees
+          method: get
+  deleteEmployee:
+    handler: src/handlers/EmployeeCRUD/deleteEmployee.handler
+    events:
+      - httpApi:
+          path: /deleteEmployee/{EmployeeID}
+          method: delete
+  createDay: 
+    handler: src/handlers/DayCRUD/createDay.handler
+    events:
+      - httpApi:
+          path: /createDay
+          method: post
+  getDay:
+    handler: src/handlers/DayCRUD/getDay.handler
+    events:
+      - httpApi:
+          path: /getDay/{Date}
+          method: get
+  getAllDays:
+    handler: src/handlers/DayCRUD/getAllDays.handler
+    events:
+      - httpApi:
+          path: /getAllDays
+          method: get
+  deleteDay:
+    handler: src/handlers/DayCRUD/deleteDay.handler
+    events:
+      - httpApi:
+          path: /deleteDay/{Date}
+          method: delete

@@ -1,43 +1,28 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { provideNativeDateAdapter } from '@angular/material/core';
-
-// FullCalendar Imports
+import { MatDialog, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { FullCalendarComponent } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { CalendarOptions } from '@fullcalendar/core';
+
+// API Imports
+import { getAllDays, Day } from '../utility/days';
+import { getAllEmployees, Employee } from '../utility/employee';
+import { getAllProjects, Project } from '../utility/projects';
 
 @Component({
-selector: 'app-form',
-providers: [provideNativeDateAdapter()],
+  selector: 'app-form',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
-  constructor(private router: Router) {}
+export class HomeComponent implements OnInit {
+  @ViewChild('calendar') calendarComponent!: FullCalendarComponent;
 
-  ngOnInit() {}
+  employees: Employee[] = [];
+  projects: Project[] = [];
+  days: Day[] = [];
 
-  signIn() {
-    this.router.navigate(['/login']);
-  }
-
-  // U.S. Federal Holidays
-  federalHolidays = [
-    { date: '2025-01-01', name: "New Year's Day" },
-    { date: '2025-01-20', name: "Martin Luther King Jr. Day" },
-    { date: '2025-02-17', name: "Presidents' Day" },
-    { date: '2025-05-26', name: "Memorial Day" },
-    { date: '2025-07-04', name: "Independence Day" },
-    { date: '2025-09-01', name: "Labor Day" },
-    { date: '2025-10-13', name: "Columbus Day" },
-    { date: '2025-11-11', name: "Veterans Day" },
-    { date: '2025-11-27', name: "Thanksgiving Day" },
-    { date: '2025-12-25', name: "Christmas Day" }
-  ];
-
-  // FullCalendar Configuration
-  calendarOptions: CalendarOptions = {
+  calendarOptions: any = {
     initialView: 'dayGridMonth',
     plugins: [dayGridPlugin, interactionPlugin],
     headerToolbar: {
@@ -45,37 +30,86 @@ export class HomeComponent {
       center: 'title',
       right: 'dayGridMonth,dayGridWeek,dayGridDay'
     },
-    selectable: true,
-    editable: true,
     events: [],
-    dayCellDidMount: (info) => {
-      const dateStr = info.date.toISOString().split('T')[0];
-      const day = info.date.getDay();
-
-      if (day === 0 || day === 6) {
-        // Weekends (Saturday & Sunday) - Dark Gray
-        info.el.style.backgroundColor = '#a0a0a0';
-      }
-      this.federalHolidays.forEach(holiday => {
-        if (holiday.date === dateStr) {
-          // Federal Holidays - Light Gray
-          info.el.style.backgroundColor = '#d3d3d3';
-          const holidayLabel = document.createElement('div');
-          holidayLabel.style.fontSize = '12px';
-          holidayLabel.style.color = 'black';
-          holidayLabel.style.textAlign = 'center';
-          holidayLabel.style.padding = '2px';
-          holidayLabel.style.borderRadius = '4px';
-          holidayLabel.style.position = 'absolute';
-          holidayLabel.style.bottom = '5px';
-          holidayLabel.style.left = '50%';
-          holidayLabel.style.transform = 'translateX(-50%)';
-          holidayLabel.style.background = 'rgba(255, 255, 255, 0.8)';
-          holidayLabel.innerText = holiday.name;
-          info.el.appendChild(holidayLabel);
-          info.el.style.position = 'relative';
-        }
-      });
-    }
+    eventClick: this.handleEventClick.bind(this)
   };
+
+  constructor(private router: Router, private dialog: MatDialog) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.loadEventsToCalendar();
+  }
+
+  async loadEventsToCalendar(): Promise<void> {
+    try {
+      // Load all API data in parallel
+      const [days, employees, projects] = await Promise.all([
+        getAllDays(),
+        getAllEmployees(),
+        getAllProjects()
+      ]);
+
+      this.employees = employees;
+      this.projects = projects;
+      this.days = days;
+
+      const events = this.days.map(day => {
+        const employee = this.employees.find(emp => emp.EmployeeID === day.EmployeeID);
+        const project = this.projects.find(proj => proj.ProjectID === day.ProjectID);
+
+        return {
+          title: `${project?.ProjectName || 'Unknown Project'}`,
+          start: this.convertDateFormat(day.date),
+          extendedProps: {
+            employeeName: employee?.EmployeeName || 'Unknown Employee',
+            hoursWorked: day.HoursWorked,
+            projectName: project?.ProjectName || 'Unknown Project'
+          }
+        };
+      });
+
+      this.calendarOptions.events = events;
+    } catch (error) {
+      console.error('Error loading calendar events:', error);
+    }
+  }
+
+  handleEventClick(info: any): void {
+    const { employeeName, hoursWorked, projectName } = info.event.extendedProps;
+
+    this.dialog.open(EventDetailsDialog, {
+      data: {
+        projectName,
+        employeeName,
+        hoursWorked
+      }
+    });
+  }
+
+  convertDateFormat(dateStr: string): string {
+    const [month, day, year] = dateStr.split('-');
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+
+  signIn(): void {
+    this.router.navigate(['/login']);
+  }
+}
+
+@Component({
+  selector: 'event-details-dialog',
+  template: `
+    <h2 mat-dialog-title>Project Details</h2>
+    <mat-dialog-content>
+      <p><strong>Project:</strong> {{ data.projectName }}</p>
+      <p><strong>Employee:</strong> {{ data.employeeName }}</p>
+      <p><strong>Hours Worked:</strong> {{ data.hoursWorked }} hrs</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+  `
+})
+export class EventDetailsDialog {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 }

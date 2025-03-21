@@ -223,7 +223,9 @@ Keep branches short-lived to avoid divergence.
 
 ## Extra Dependencies Needed:
 - npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction --save
-
+- npm install jspdf --save
+- npm i html2canvas --save
+- 
 ## API Example Requests
 ## Project Table
 - ### CREATE / UPDATE - Create a new project, also updates a project if projectid (PK) already exists
