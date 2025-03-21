@@ -225,11 +225,45 @@ Keep branches short-lived to avoid divergence.
 - npm install @fullcalendar/angular @fullcalendar/core @fullcalendar/daygrid @fullcalendar/interaction --save
 - npm install jspdf --save
 - npm i html2canvas --save
-- 
-## Dynamo API Example Requests
-- POST - Create a new project
+
+## API Example Requests
+## Project Table
+- ### CREATE / UPDATE - Create a new project, also updates a project if projectid (PK) already exists
+- URL/createProject Method: POST
+- Body:
 - - {
     "ProjectID": 3,
     "ProjectName": "3Test-Project",
-    "EmployeesID": [4, 5, 6]  
-}
+    "EmployeesID": [4, 5, 6]  }
+- ### READ - get project(s)
+- URL/getProject/{ProjectID} Method: GET Return: One project matching ProjectID - URL/getProject/1
+- URL/getAllProjects Method: Get Return: All projects
+- ### DELETE - delete a project
+- URL/deleteProject/{ProjectID} Method: DELETE - URL/deleteProject/1
+## Employee Table
+- ### CREATE / UPDATE - Create a new employee, also updates an employee if employeeID (PK) already exists
+- URL/createEmployee Method: POST
+- Body:
+- - {
+    "EmployeeID": 1,
+    "EmployeeName": "Luke Strassner",
+    "ProjectID": 1  }
+- ### READ - get employee(s)
+- URL/getEmployee/{EmployeeID} Method: GET Return: One employee matching EmployeeID - URL/getEmployee/1
+- URL/getAllEmployees Method: Get Return: All employees
+- ### DELETE - delete a day
+- URL/deleteEmployee/{EmployeeID} Method: DELETE - URL/deleteEmployee/1
+## Day Table
+- ### CREATE / UPDATE - Create a new day, also updates a day if the Date (PK) already exists
+- URL/createDay Method: POST
+- Body:
+- - {
+    "Date": 03-07-2025,
+    "EmployeeID": "1",
+    "ProjectID": 1,
+    "HoursWorked": 8  }
+- ### READ - get day(s)
+- URL/getDay/{Date} Method: GET Return: One day matching Date - URL/getDay/03-07-2025
+- URL/getAllDays Method: Get Return: All days
+- ### DELETE - delete a day
+- URL/deleteDay/{Date} Method: DELETE - URL/deleteDay/03-07-2025
