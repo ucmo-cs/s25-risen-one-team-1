@@ -11,15 +11,15 @@
   </h3>
   <div class="header-right">
     <div class="verticle-alignment-helper">
-      <!-- This is the user icon  could change to make it usable -->
-      <mat-icon [matMenuTriggerFor] ="id" class ="id">account_circle</mat-icon>
-      <mat-menu #id="matMenu">
-        <button mat-menu-item [routerLink]="'/home'">Home</button>
-        <button mat-menu-item [routerLink]="'/account'">Account</button>
-        <button mat-menu-item (click)="signOut()">Log Out</button>
-      </mat-menu>
+      <button mat-icon-button [routerLink]="'/account'">
+        <mat-icon>account_circle</mat-icon>
+      </button>
     </div>
-
-
+    <mat-icon [matMenuTriggerFor]="menu" class="hamburger-icon">menu</mat-icon>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item [routerLink]="'/home'">Home</button>
+      <button mat-menu-item (click)="signOut()">Log Out</button>
+    </mat-menu>
   </div>
 </div>
+
