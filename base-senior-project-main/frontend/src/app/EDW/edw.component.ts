@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { getAllProjects, Project } from '../utility/projects';
 import { getAllEmployees, Employee } from '../utility/employee';
-import { getDaysByEmployeeAndProject } from '../utility/days';
+import { getAllDays, Day } from '../utility/days';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -13,6 +13,7 @@ import html2canvas from 'html2canvas';
 export class EdwComponent implements OnInit {
   months = ['January 2024', 'February 2024', 'March 2024', 'April 2024'];
   projects: Project[] = [];
+  allDays: Day[] = [];
   groupedTimeSheets: {
     projectName: string;
     month: string;
@@ -31,10 +32,16 @@ export class EdwComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.projects = await getAllProjects();
     const allEmployees = await getAllEmployees();
+    this.allDays = await getAllDays();
+
+    // Debugging logs
+    console.log("Projects: ", this.projects);
+    console.log("Employees: ", allEmployees);
+    console.log("All Days: ", this.allDays);
 
     for (const project of this.projects) {
       const employees = allEmployees.filter(e =>
-        project.EmployeesID.includes(e.EmployeeID)
+        project.EmployeesID.map(String).includes(String(e.EmployeeID))
       );
 
       for (const month of this.months) {
@@ -47,15 +54,36 @@ export class EdwComponent implements OnInit {
         const timeSheet = [];
 
         for (const emp of employees) {
-          const logs = await getDaysByEmployeeAndProject(emp.EmployeeID, project.ProjectID);
+          const logs = this.allDays.filter(
+            (d) =>
+              d &&
+              d.EmployeeID != null &&
+              d.ProjectID != null &&
+              d.date && // make sure date is defined
+              String(d.EmployeeID) === String(emp.EmployeeID) &&
+              d.ProjectID === project.ProjectID
+          );
+
+          // Debugging each employee's logs
+          console.log(`Logs for employee ${emp.EmployeeName}:`, logs);
 
           const daily = daysInMonth.map((day) => {
-            const dateStr = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
-            const match = logs.find((d) => d.date === dateStr);
-            return match ? match.HoursWorked : 0;
+            const targetDate = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
+
+            const match = logs.find((d) => {
+              if (!d.date) return false;
+
+              const logDate = d.date.replace(/[-\/]/g, '').padStart(8, '0');
+              const target = targetDate.replace(/[-\/]/g, '').padStart(8, '0');
+
+              return logDate === target;
+            });
+
+            return match && match.HoursWorked ? match.HoursWorked : 0;
           });
 
           const total = daily.reduce((a, b) => a + b, 0);
+
           timeSheet.push({ employeeName: emp.EmployeeName, dailyHours: daily, total });
         }
 

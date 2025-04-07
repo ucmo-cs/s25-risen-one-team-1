@@ -8,14 +8,18 @@
       <thead>
       <tr>
         <th>Employee</th>
-        <th *ngFor="let day of group.daysInMonth">{{ day }}</th>
+        <th *ngFor="let day of group.daysInMonth; let i = index">
+          {{ day }}
+        </th>
         <th>Total</th>
       </tr>
       </thead>
       <tbody>
       <tr *ngFor="let row of group.timeSheet">
         <td>{{ row.employeeName }}</td>
+        <!-- Loop through daily hours for this row -->
         <td *ngFor="let hours of row.dailyHours">{{ hours }}</td>
+        <!-- Total hours -->
         <td>{{ row.total }}</td>
       </tr>
       </tbody>
