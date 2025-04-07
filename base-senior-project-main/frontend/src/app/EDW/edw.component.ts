@@ -1,8 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
 import { getAllProjects, Project } from '../utility/projects';
 import { getAllEmployees, Employee } from '../utility/employee';
-import { getAllDays, Day } from '../utility/days';
+import { getDaysByEmployeeAndProject } from '../utility/days';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -12,55 +11,66 @@ import html2canvas from 'html2canvas';
   styleUrls: ['./edw.component.css']
 })
 export class EdwComponent implements OnInit {
+  months = ['January 2024', 'February 2024', 'March 2024', 'April 2024'];
   projects: Project[] = [];
-  employees: Employee[] = [];
-  days: Day[] = [];
-  displayedColumns: string[] = ['projectName', 'employeeName', 'projectId', 'hoursWorked'];
-  dataSource = new MatTableDataSource<any>();
-  sortBy: string = 'month'; // Default sort option
+  groupedTimeSheets: {
+    projectName: string;
+    month: string;
+    daysInMonth: number[];
+    timeSheet: {
+      employeeName: string;
+      dailyHours: number[];
+      total: number;
+    }[];
+  }[] = [];
 
   @ViewChild('innerContainer', { static: false }) innerContainer!: ElementRef;
 
   constructor() {}
 
-  ngOnInit(): void {
-    this.loadData();
-  }
-
-  async loadData(): Promise<void> {
+  async ngOnInit(): Promise<void> {
     this.projects = await getAllProjects();
-    this.employees = await getAllEmployees();
-    this.days = await getAllDays();
+    const allEmployees = await getAllEmployees();
 
-    this.updateTableData();
-  }
+    for (const project of this.projects) {
+      const employees = allEmployees.filter(e =>
+        project.EmployeesID.includes(e.EmployeeID)
+      );
 
-  updateTableData(): void {
-    const mergedData = this.projects.flatMap(project => {
-      return project.EmployeesID.map(employeeId => {
-        const employee = this.employees.find(e => e.EmployeeID === employeeId);
-        const employeeDays = this.days.filter(day => day.EmployeeID === employeeId && day.ProjectID === project.ProjectID);
-        const totalHours = employeeDays.reduce((sum, day) => sum + day.HoursWorked, 0);
+      for (const month of this.months) {
+        const [monthName, yearStr] = month.split(' ');
+        const year = parseInt(yearStr, 10);
+        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+        const days = new Date(year, monthIndex + 1, 0).getDate();
+        const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
 
-        return {
+        const timeSheet = [];
+
+        for (const emp of employees) {
+          const logs = await getDaysByEmployeeAndProject(emp.EmployeeID, project.ProjectID);
+
+          const daily = daysInMonth.map((day) => {
+            const dateStr = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
+            const match = logs.find((d) => d.date === dateStr);
+            return match ? match.HoursWorked : 0;
+          });
+
+          const total = daily.reduce((a, b) => a + b, 0);
+          timeSheet.push({ employeeName: emp.EmployeeName, dailyHours: daily, total });
+        }
+
+        this.groupedTimeSheets.push({
           projectName: project.ProjectName,
-          projectId: project.ProjectID,
-          employeeName: employee ? employee.EmployeeName : 'Unknown',
-          hoursWorked: totalHours
-        };
-      });
-    });
-
-    this.dataSource.data = mergedData;
+          month,
+          daysInMonth,
+          timeSheet
+        });
+      }
+    }
   }
 
-  onSortChange(): void {
-    this.updateTableData();
-  }
-
-  public generatePDF(): void {
+  generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;
-
     if (!containerElement) {
       console.error('Error: EDW inner container element not found.');
       return;
@@ -84,7 +94,7 @@ export class EdwComponent implements OnInit {
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
 
         pdf.addImage(image, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save('EDW-Data.pdf');
+        pdf.save('EDW-Timesheet.pdf');
       })
       .catch((error) => {
         console.error('Error generating PDF:', error);
