@@ -16,13 +16,6 @@ export class SidenavComponent implements OnInit {
   pm: boolean = false;
   isSidebarVisible: boolean = false;
 
-  toggleSidebar() {
-    this.isSidebarVisible = !this.isSidebarVisible;
-  }
-
-  toggle = [false,false];
-
-
 
 }
 
