@@ -64,3 +64,4 @@
 2029-11-11, Veterans Day
 2029-11-22, Thanksgiving Day
 2029-12-25, Christmas Day
+2030-01-01, New Year's Day
