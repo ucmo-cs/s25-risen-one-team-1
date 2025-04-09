@@ -1,39 +1,62 @@
-<div class="edw-container" #innerContainer>
+<!-- Dropdown Filters -->
+<div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center;">
+  <label>
+    Project:
+    <select [(ngModel)]="selectedProject">
+      <option value="">All Projects</option>
+      <option *ngFor="let proj of projects" [value]="proj.ProjectName">
+        {{ proj.ProjectName }}
+      </option>
+    </select>
+  </label>
 
-  <!-- Loop through all project + month timesheets -->
-  <div *ngFor="let group of groupedTimeSheets" class="inner-container" style="margin-bottom: 40px;">
-    <h3 style="margin-bottom: 10px;">{{ group.projectName }} - {{ group.month }}</h3>
+  <label>
+    Month:
+    <select [(ngModel)]="selectedMonth">
+      <option value="">All Months</option>
+      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+    </select>
+  </label>
+</div>
 
-    <table>
-      <thead>
-      <tr>
-        <th>Employee</th>
-        <th *ngFor="let day of group.daysInMonth; let i = index">
-          {{ day }}
-        </th>
-        <th>Total</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let row of group.timeSheet">
-        <td>{{ row.employeeName }}</td>
-        <!-- Loop through daily hours for this row -->
-        <td *ngFor="let hours of row.dailyHours">{{ hours }}</td>
-        <!-- Total hours -->
-        <td>{{ row.total }}</td>
-      </tr>
-      </tbody>
-    </table>
+<!-- Table Container -->
+<div class="edw-container">
+  <div #innerContainer class="inner-container">
+    <div *ngFor="let group of filteredGroupedTimeSheets">
+      <h3>{{ group.projectName }} - {{ group.month }}</h3>
+      <table>
+        <thead>
+        <tr>
+          <th>Employee</th>
+          <th *ngFor="let day of group.daysInMonth">{{ day }}</th>
+          <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of group.timeSheet">
+          <td>{{ row.employeeName }}</td>
+          <td *ngFor="let h of row.dailyHours">{{ h }}</td>
+          <td>{{ row.total }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Signature Input Section -->
+    <div style="margin-top: 30px;">
+      <label for="signature">Signature:</label>
+      <input
+        id="signature"
+        type="text"
+        [(ngModel)]="signatureText"
+        placeholder="Enter your full name"
+        style="width: 300px; padding: 6px 12px; margin-left: 10px; border-radius: 6px; border: 1px solid #ccc;"
+      />
+    </div>
   </div>
+</div>
 
-  <!-- Signature Area -->
-  <div style="margin-top: 40px;">
-    <p>Signature: ____________________________________</p>
-    <p>Date: ____________</p>
-  </div>
-
-  <!-- Export Button -->
-  <div class="button-container">
-    <button class="button-85" (click)="generatePDF()">Export to PDF</button>
-  </div>
+<!-- PDF Button -->
+<div class="button-container">
+  <button class="button-85" (click)="generatePDF()">Download PDF</button>
 </div>

@@ -10,6 +10,13 @@
   overflow-x: hidden; /* prevent overlap — scroll handled inside */
 }
 
+select, input[type="text"] {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
 /* Inner Container */
 .inner-container {
   width: 100%;

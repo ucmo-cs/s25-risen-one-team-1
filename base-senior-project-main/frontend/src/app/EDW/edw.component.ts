@@ -25,6 +25,10 @@ export class EdwComponent implements OnInit {
     }[];
   }[] = [];
 
+  selectedProject: string = '';
+  selectedMonth: string = '';
+  signatureText: string = '';
+
   @ViewChild('innerContainer', { static: false }) innerContainer!: ElementRef;
 
   constructor() {}
@@ -33,11 +37,6 @@ export class EdwComponent implements OnInit {
     this.projects = await getAllProjects();
     const allEmployees = await getAllEmployees();
     this.allDays = await getAllDays();
-
-    // Debugging logs
-    console.log("Projects: ", this.projects);
-    console.log("Employees: ", allEmployees);
-    console.log("All Days: ", this.allDays);
 
     for (const project of this.projects) {
       const employees = allEmployees.filter(e =>
@@ -59,23 +58,18 @@ export class EdwComponent implements OnInit {
               d &&
               d.EmployeeID != null &&
               d.ProjectID != null &&
-              d.date && // make sure date is defined
+              d.date &&
               String(d.EmployeeID) === String(emp.EmployeeID) &&
               d.ProjectID === project.ProjectID
           );
-
-          // Debugging each employee's logs
-          console.log(`Logs for employee ${emp.EmployeeName}:`, logs);
 
           const daily = daysInMonth.map((day) => {
             const targetDate = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
 
             const match = logs.find((d) => {
               if (!d.date) return false;
-
               const logDate = d.date.replace(/[-\/]/g, '').padStart(8, '0');
               const target = targetDate.replace(/[-\/]/g, '').padStart(8, '0');
-
               return logDate === target;
             });
 
@@ -95,6 +89,14 @@ export class EdwComponent implements OnInit {
         });
       }
     }
+  }
+
+  get filteredGroupedTimeSheets() {
+    return this.groupedTimeSheets.filter(sheet => {
+      const projectMatch = this.selectedProject ? sheet.projectName === this.selectedProject : true;
+      const monthMatch = this.selectedMonth ? sheet.month === this.selectedMonth : true;
+      return projectMatch && monthMatch;
+    });
   }
 
   generatePDF(): void {
@@ -128,4 +130,5 @@ export class EdwComponent implements OnInit {
         console.error('Error generating PDF:', error);
       });
   }
+
 }
