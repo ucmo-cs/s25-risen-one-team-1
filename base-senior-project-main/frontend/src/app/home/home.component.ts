@@ -40,11 +40,11 @@ export class HomeComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.loadEventsToCalendar();
     await this.loadFederalHolidays();
+    await this.loadWeekends();
   }
 
   async loadEventsToCalendar(): Promise<void> {
     try {
-      // Load all API data in parallel
       const [days, employees, projects] = await Promise.all([
         getAllDays(),
         getAllEmployees(),
@@ -89,17 +89,16 @@ export class HomeComponent implements OnInit {
 
       const holidayEvents = holidays
         .split('\n')
-        .map(line => line.trim())
-        .filter(line => line) // Remove empty lines
-        .map(line => {
-          const [date, name] = line.split(','); // Split date and holiday name
-          return {
-            title: name || 'Holiday', // Use the holiday name or fallback to 'Holiday'
-            start: date,
-            display: 'background',
-            color: '#d3d3d3'
-          };
-        });
+
+        .map(date => date.trim())
+        .filter(date => date)
+        .map(date => ({
+          title: 'Holiday',
+          start: date,
+          display: 'background',
+          color: '#d3d3d3'
+        }));
+
 
       this.calendarOptions.events = [
         ...this.calendarOptions.events,
@@ -107,6 +106,36 @@ export class HomeComponent implements OnInit {
       ];
     } catch (error) {
       console.error('Error loading holidays:', error);
+    }
+  }
+
+  async loadWeekends(): Promise<void> {
+    try {
+      const weekends = await this.http
+        .get('assets/weekend.txt', { responseType: 'text' })
+        .toPromise();
+
+      if (!weekends) {
+        console.error('Weekend file is empty or could not be loaded.');
+        return;
+      }
+
+      const weekendEvents = weekends
+        .split('\n')
+        .map(date => date.trim())
+        .filter(date => date)
+        .map(date => ({
+          start: date,
+          display: 'background',
+          color: '#d3d3d3'
+        }));
+
+      this.calendarOptions.events = [
+        ...this.calendarOptions.events,
+        ...weekendEvents
+      ];
+    } catch (error) {
+      console.error('Error loading weekends:', error);
     }
   }
 
