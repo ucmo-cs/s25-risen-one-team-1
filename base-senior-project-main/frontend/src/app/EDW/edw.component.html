@@ -1,40 +1,38 @@
-<div class="edw-container">
-  <h1>Employee Data Warehouse (EDW)</h1>
+<div class="edw-container" #innerContainer>
 
-  <!-- Inner Container for the Table -->
-  <div class="inner-container" #innerContainer>
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- Loop through all project + month timesheets -->
+  <div *ngFor="let group of groupedTimeSheets" class="inner-container" style="margin-bottom: 40px;">
+    <h3 style="margin-bottom: 10px;">{{ group.projectName }} - {{ group.month }}</h3>
 
-      <!-- Project Name Column -->
-      <ng-container matColumnDef="projectName">
-        <th mat-header-cell *matHeaderCellDef> Project Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.projectName}} </td>
-      </ng-container>
-
-      <!-- Employee Name Column -->
-      <ng-container matColumnDef="employeeName">
-        <th mat-header-cell *matHeaderCellDef> Employee Name </th>
-        <td mat-cell *matCellDef="let element"> {{element.employeeName}} </td>
-      </ng-container>
-
-      <!-- Project ID Column -->
-      <ng-container matColumnDef="projectId">
-        <th mat-header-cell *matHeaderCellDef> Project ID </th>
-        <td mat-cell *matCellDef="let element"> {{element.projectId}} </td>
-      </ng-container>
-
-      <!-- Hours Worked Column -->
-      <ng-container matColumnDef="hoursWorked">
-        <th mat-header-cell *matHeaderCellDef> Hours Worked </th>
-        <td mat-cell *matCellDef="let element"> {{element.hoursWorked}} </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <table>
+      <thead>
+      <tr>
+        <th>Employee</th>
+        <th *ngFor="let day of group.daysInMonth; let i = index">
+          {{ day }}
+        </th>
+        <th>Total</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let row of group.timeSheet">
+        <td>{{ row.employeeName }}</td>
+        <!-- Loop through daily hours for this row -->
+        <td *ngFor="let hours of row.dailyHours">{{ hours }}</td>
+        <!-- Total hours -->
+        <td>{{ row.total }}</td>
+      </tr>
+      </tbody>
     </table>
   </div>
 
-  <!-- Export to PDF Button Centered -->
+  <!-- Signature Area -->
+  <div style="margin-top: 40px;">
+    <p>Signature: ____________________________________</p>
+    <p>Date: ____________</p>
+  </div>
+
+  <!-- Export Button -->
   <div class="button-container">
     <button class="button-85" (click)="generatePDF()">Export to PDF</button>
   </div>

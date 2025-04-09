@@ -13,7 +13,7 @@ import { AppFooterComponent } from './components/app-footer/app-footer.component
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { HomeComponent, EventDetailsDialog } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { EdwComponent } from './edw/edw.component';
+import { EdwComponent } from './EDW/edw.component';
 import { AccountComponent } from './account/account.component';
 
 // FullCalendar Module

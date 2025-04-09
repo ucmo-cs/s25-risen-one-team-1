@@ -1,7 +1,7 @@
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { LoginComponent } from './login/login.component';
-import { EdwComponent } from './edw/edw.component';
+import { EdwComponent } from './EDW/edw.component';
 import { NgModel } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import {AccountComponent} from "./account/account.component";
