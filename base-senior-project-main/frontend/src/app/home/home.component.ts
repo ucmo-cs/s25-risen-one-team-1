@@ -89,14 +89,17 @@ export class HomeComponent implements OnInit {
 
       const holidayEvents = holidays
         .split('\n')
-        .map(date => date.trim())
-        .filter(date => date) // Remove empty lines
-        .map(date => ({
-          title: 'Holiday',
-          start: date,
-          display: 'background',
-          color: '#d3d3d3' // Light red color for holidays
-        }));
+        .map(line => line.trim())
+        .filter(line => line) // Remove empty lines
+        .map(line => {
+          const [date, name] = line.split(','); // Split date and holiday name
+          return {
+            title: name || 'Holiday', // Use the holiday name or fallback to 'Holiday'
+            start: date,
+            display: 'background',
+            color: '#d3d3d3'
+          };
+        });
 
       this.calendarOptions.events = [
         ...this.calendarOptions.events,
