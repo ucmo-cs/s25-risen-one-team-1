@@ -7,19 +7,31 @@
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   border-radius: 15px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  overflow-x: hidden; /* prevent overlap — scroll handled inside */
 }
 
-/* Invisible Inner Container */
+select, input[type="text"] {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+/* Inner Container */
 .inner-container {
   width: 100%;
-  padding: 0;
-  border-radius: 0;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+  padding-bottom: 12px; /* 👈 leaves room for scrollbar */
 }
 
 /* Table Styling */
 table {
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
   border-collapse: collapse;
+  margin-bottom: 10px; /* 👈 space from bottom of container */
 }
 
 th, td {
