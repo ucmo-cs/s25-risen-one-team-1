@@ -11,3 +11,4 @@ export const getAllEmployees = (): Promise<Employee[]> => fetchData('/getAllEmpl
 
 // Fetch employees by project ID
 export const getEmployeesByProjectId = (projectId: number): Promise<Employee[]> => fetchData(`/getEmployeesByProject/${projectId}`);
+
