@@ -89,6 +89,7 @@ export class HomeComponent implements OnInit {
 
       const holidayEvents = holidays
         .split('\n')
+
         .map(date => date.trim())
         .filter(date => date)
         .map(date => ({
@@ -97,6 +98,7 @@ export class HomeComponent implements OnInit {
           display: 'background',
           color: '#d3d3d3'
         }));
+
 
       this.calendarOptions.events = [
         ...this.calendarOptions.events,
