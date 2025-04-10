@@ -61,11 +61,6 @@ interface previousRequest {
   providers: [provideNativeDateAdapter()],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  template: `
-  <input type="text" [(ngModel)]="username" placeholder="Username">
-  <input type="password" [(ngModel)]="password" placeholder="Password">
-  <button (click)="login()">Login</button>
-`
 })
 export class LoginComponent {
   username: string = ''; // Initialize with an empty string
@@ -75,6 +70,8 @@ export class LoginComponent {
 
   login(event: Event) {
 
+    this.username.trim();
+    this.password.trim();
 
     event.preventDefault(); // Prevents default JavaScript form submission ->
     //-> also breaks the warning for empty username/password fields
