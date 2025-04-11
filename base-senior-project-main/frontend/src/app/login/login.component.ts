@@ -70,8 +70,7 @@ export class LoginComponent {
 
   login(event: Event) {
 
-    this.username.trim();
-    this.password.trim();
+    this.username = this.username.trim();
 
     event.preventDefault(); // Prevents default JavaScript form submission ->
     //-> also breaks the warning for empty username/password fields
