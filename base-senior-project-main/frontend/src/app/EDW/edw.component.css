@@ -20,7 +20,7 @@ select, input[type="text"] {
 /* Inner Container */
 .inner-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
   display: block;
   white-space: nowrap;
   padding-bottom: 12px; /* 👈 leaves room for scrollbar */
@@ -28,6 +28,7 @@ select, input[type="text"] {
 
 /* Table Styling */
 table {
+
   width: max-content;
   min-width: 100%;
   border-collapse: collapse;
@@ -68,7 +69,7 @@ tbody tr:hover {
 /* Glowing Button Style */
 .button-85 {
   display: inline-block;
-  margin-top: 20px;
+  margin: 20px;
   padding: 0.6em 2em;
   border: none;
   outline: none;
@@ -107,6 +108,7 @@ tbody tr:hover {
   position: absolute;
   top: -2px;
   left: -2px;
+  bottom: -2px;
   background-size: 400%;
   z-index: -1;
   filter: blur(5px);
