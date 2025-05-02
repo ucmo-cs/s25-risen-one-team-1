@@ -33,6 +33,12 @@ module.exports.handler = async (event) => {
         }
     }
 
+    if (typeof ProjectID !== 'number' || typeof ProjectName !== 'string' || !Array.isArray(EmployeesID) || !EmployeesID.every(id => typeof id === 'number')) {
+        return {
+            statusCode: 400, // 400: bad request
+            body: JSON.stringify("Bad Request, invalid data types. ProjectID must be an integer, ProjectName must be a string, and EmployeesID must be an array of integers.")
+        };
+    }
     try{
         await dynamoDb.put(params).promise();
         
