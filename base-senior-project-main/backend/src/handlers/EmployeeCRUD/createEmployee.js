@@ -32,6 +32,12 @@ module.exports.handler = async (event) => {
             body: JSON.stringify("Bad Request, missing attributes in body.")
         }
     }
+    if (typeof ProjectID !== 'number' || typeof EmployeeName !== 'string' || typeof EmployeeID !== 'number') {
+        return {
+            statusCode: 400, // 400: bad request
+            body: JSON.stringify("Bad Request, invalid data types. ProjectID must be an integer, Employee must be a string, and EmployeesID must be an integers.")
+        };
+    }
 
     try{
         await dynamoDb.put(params).promise();
