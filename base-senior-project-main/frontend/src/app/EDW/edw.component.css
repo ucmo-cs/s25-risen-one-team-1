@@ -1,45 +1,48 @@
 /* Outer Container */
 .edw-container {
-  width: 90%;
+  width: 100%;
   max-width: 1200px;
   margin: 20px auto;
   padding: 30px;
   background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
   border-radius: 15px;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
-  overflow-x: hidden; /* prevent overlap — scroll handled inside */
-}
+  overflow: hidden; /* Disable both vertical and horizontal overflow */
 
-select, input[type="text"] {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
 }
 
 /* Inner Container */
 .inner-container {
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden; /* hide horizontal scroll */
   display: block;
-  white-space: nowrap;
-  padding-bottom: 12px; /* 👈 leaves room for scrollbar */
+  white-space: normal; /* allow block-level layout */
+  padding-bottom: 12px;
+  box-sizing: border-box;
 }
 
 /* Table Styling */
 table {
-  width: max-content;
-  min-width: 100%;
+  width: 100%;
+  table-layout: fixed; /* distribute columns evenly */
   border-collapse: collapse;
-  margin-bottom: 10px; /* 👈 space from bottom of container */
+  margin-bottom: 10px;
+  font-size: 12px; /* smaller font to help fit content */
 }
 
 th, td {
   border: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
+  padding: 2px 2px; /* tighter padding for more compact layout */
+  text-align: left;
+  font-size: 7px;
+  white-space: wrap; /* keep text on one line */
+  overflow: hidden;
+  max-width: 200px; /* controls box size */
 }
+
+
+
+
 
 th {
   background-color: #f0f0f0;
@@ -139,4 +142,11 @@ tbody tr:hover {
   left: 0;
   top: 0;
   border-radius: 10px;
+}
+
+select, input[type="text"] {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
 }

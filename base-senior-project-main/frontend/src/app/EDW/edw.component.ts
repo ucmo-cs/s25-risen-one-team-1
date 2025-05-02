@@ -119,7 +119,7 @@ export class EdwComponent implements OnInit {
         const imageData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfWidth = pdf.internal.pageSize.getWidth()*.7;
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         const imgWidth = pdfWidth;
