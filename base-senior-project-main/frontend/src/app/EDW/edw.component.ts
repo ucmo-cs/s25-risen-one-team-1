@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { getAllProjects, Project } from '../utility/projects';
 import { getAllEmployees, Employee } from '../utility/employee';
-import { getAllDays, Day } from '../utility/days';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -13,11 +12,11 @@ import html2canvas from 'html2canvas';
 export class EdwComponent implements OnInit {
   months = ['January 2024', 'February 2024', 'March 2024', 'April 2024'];
   projects: Project[] = [];
-  allDays: Day[] = [];
   groupedTimeSheets: {
     projectName: string;
     month: string;
     daysInMonth: number[];
+    weekends: Set<number>;
     timeSheet: {
       employeeName: string;
       dailyHours: number[];
@@ -36,7 +35,6 @@ export class EdwComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.projects = await getAllProjects();
     const allEmployees = await getAllEmployees();
-    this.allDays = await getAllDays();
 
     for (const project of this.projects) {
       const employees = allEmployees.filter(e =>
@@ -50,41 +48,36 @@ export class EdwComponent implements OnInit {
         const days = new Date(year, monthIndex + 1, 0).getDate();
         const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
 
+        const weekends = new Set<number>(
+          daysInMonth.filter(day => {
+            const d = new Date(year, monthIndex, day);
+            return d.getDay() === 0 || d.getDay() === 6;
+          })
+        );
+
         const timeSheet = [];
 
         for (const emp of employees) {
-          const logs = this.allDays.filter(
-            (d) =>
-              d &&
-              d.EmployeeID != null &&
-              d.ProjectID != null &&
-              d.date &&
-              String(d.EmployeeID) === String(emp.EmployeeID) &&
-              d.ProjectID === project.ProjectID
-          );
-
-          const daily = daysInMonth.map((day) => {
-            const targetDate = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
-
-            const match = logs.find((d) => {
-              if (!d.date) return false;
-              const logDate = d.date.replace(/[-\/]/g, '').padStart(8, '0');
-              const target = targetDate.replace(/[-\/]/g, '').padStart(8, '0');
-              return logDate === target;
-            });
-
-            return match && match.HoursWorked ? match.HoursWorked : 0;
+          const daily = daysInMonth.map(day => {
+            const dateObj = new Date(year, monthIndex, day);
+            const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
+            return isWeekend ? 0 : Math.floor(Math.random() * 9); // 0–8 hours
           });
 
-          const total = daily.reduce((a, b) => a + b, 0);
+          const total = daily.reduce((sum, h) => sum + h, 0);
 
-          timeSheet.push({ employeeName: emp.EmployeeName, dailyHours: daily, total });
+          timeSheet.push({
+            employeeName: emp.EmployeeName,
+            dailyHours: daily,
+            total
+          });
         }
 
         this.groupedTimeSheets.push({
           projectName: project.ProjectName,
           month,
           daysInMonth,
+          weekends,
           timeSheet
         });
       }
@@ -92,15 +85,27 @@ export class EdwComponent implements OnInit {
   }
 
   get filteredGroupedTimeSheets() {
-    return this.groupedTimeSheets.filter(sheet => {
-      const projectMatch = this.selectedProject ? sheet.projectName === this.selectedProject : true;
-      const monthMatch = this.selectedMonth ? sheet.month === this.selectedMonth : true;
-      return projectMatch && monthMatch;
-    });
+    const month = this.selectedMonth.trim().toLowerCase();
+    const project = this.selectedProject.trim().toLowerCase();
+
+    const filtered = this.groupedTimeSheets
+      .filter(sheet => {
+        const monthMatch = month ? sheet.month.toLowerCase() === month : true;
+        return monthMatch;
+      })
+      .filter(sheet => {
+        const projectMatch = project ? sheet.projectName.toLowerCase() === project : true;
+        return projectMatch;
+      });
+
+    return filtered.sort((a, b) =>
+      this.months.indexOf(a.month) - this.months.indexOf(b.month)
+    );
   }
 
   generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;
+
     if (!containerElement) {
       console.error('Error: EDW inner container element not found.');
       return;
@@ -108,27 +113,39 @@ export class EdwComponent implements OnInit {
 
     html2canvas(containerElement, {
       scale: 2,
-      scrollX: -window.scrollX,
+      scrollX: 0,
       scrollY: -window.scrollY,
-      useCORS: true
+      useCORS: true,
+      windowWidth: containerElement.scrollWidth,
+      windowHeight: containerElement.scrollHeight
     })
       .then((canvas) => {
-        const image = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: 'mm',
-          format: 'a4'
-        });
+        const imageData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const pdfWidth = pdf.internal.pageSize.getWidth() * 0.7;
+        const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        pdf.addImage(image, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imageData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imageData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
         pdf.save('EDW-Timesheet.pdf');
       })
       .catch((error) => {
         console.error('Error generating PDF:', error);
       });
   }
-
 }

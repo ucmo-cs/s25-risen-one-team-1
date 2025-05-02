@@ -39,12 +39,12 @@ export class HomeComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.loadEventsToCalendar();
-    await this.loadFederalHolidays();
+    //await this.loadFederalHolidays();
+    await this.loadWeekends();
   }
 
   async loadEventsToCalendar(): Promise<void> {
     try {
-      // Load all API data in parallel
       const [days, employees, projects] = await Promise.all([
         getAllDays(),
         getAllEmployees(),
@@ -75,6 +75,35 @@ export class HomeComponent implements OnInit {
       console.error('Error loading calendar events:', error);
     }
   }
+  async loadWeekends(): Promise<void> {
+    try {
+      const weekends = await this.http
+        .get('assets/weekend.txt', { responseType: 'text' })
+        .toPromise();
+
+      if (!weekends) {
+        console.error('Weekend file is empty or could not be loaded.');
+        return;
+      }
+
+      const weekendEvents = weekends
+        .split('\n')
+        .map(date => date.trim())
+        .filter(date => date)
+        .map(date => ({
+          start: date,
+          display: 'background',
+          color: '#d3d3d3'
+        }));
+
+      this.calendarOptions.events = [
+        ...this.calendarOptions.events,
+        ...weekendEvents
+      ];
+    } catch (error) {
+      console.error('Error loading weekends:', error);
+    }
+  }
 
   async loadFederalHolidays(): Promise<void> {
     try {
@@ -90,22 +119,26 @@ export class HomeComponent implements OnInit {
       const holidayEvents = holidays
         .split('\n')
         .map(date => date.trim())
-        .filter(date => date) // Remove empty lines
+        .filter(date => date)
         .map(date => ({
           title: 'Holiday',
           start: date,
           display: 'background',
-          color: '#d3d3d3' // Light red color for holidays
+          color: '#ffcccc' // a distinct color from weekends
         }));
+
 
       this.calendarOptions.events = [
         ...this.calendarOptions.events,
         ...holidayEvents
+
       ];
     } catch (error) {
       console.error('Error loading holidays:', error);
     }
   }
+
+
 
   handleEventClick(info: any): void {
     const { employeeName, hoursWorked, projectName } = info.event.extendedProps;
