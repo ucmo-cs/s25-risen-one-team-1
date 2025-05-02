@@ -20,7 +20,7 @@ export class EdwComponent implements OnInit {
     daysInMonth: number[];
     timeSheet: {
       employeeName: string;
-      dailyHours: number[];
+      dailyHours: (number | null)[];
       total: number;
     }[];
   }[] = [];
@@ -46,9 +46,17 @@ export class EdwComponent implements OnInit {
       for (const month of this.months) {
         const [monthName, yearStr] = month.split(' ');
         const year = parseInt(yearStr, 10);
-        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+        const date = new Date(`${monthName} 1, ${year}`);
+        const monthIndex = date.getMonth();
         const days = new Date(year, monthIndex + 1, 0).getDate();
         const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
+
+        // Log for debugging
+        console.log(`Processing ${monthName} ${year}:`, {
+          monthIndex,
+          days,
+          daysInMonth
+        });
 
         const timeSheet = [];
 
@@ -63,20 +71,40 @@ export class EdwComponent implements OnInit {
               d.ProjectID === project.ProjectID
           );
 
+          console.log(`Logs for ${emp.EmployeeName} in ${project.ProjectName}:`, logs);
+
           const daily = daysInMonth.map((day) => {
-            const targetDate = `${String(monthIndex + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}-${year}`;
+            // Create date object with proper month index (0-11)
+            const dateObj = new Date(year, monthIndex, day);
+            const targetDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
+            const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6; // 0 = Sunday, 6 = Saturday
+
+            // Log for debugging
+            console.log(`Processing day ${day}:`, {
+              targetDate,
+              isWeekend,
+              dayOfWeek: dateObj.getDay()
+            });
 
             const match = logs.find((d) => {
               if (!d.date) return false;
-              const logDate = d.date.replace(/[-\/]/g, '').padStart(8, '0');
-              const target = targetDate.replace(/[-\/]/g, '').padStart(8, '0');
-              return logDate === target;
+              return d.date.slice(0, 10) === targetDate; // Compare date strings directly
             });
 
-            return match && match.HoursWorked ? match.HoursWorked : 0;
+            console.log(`Checking date ${targetDate} (Weekend: ${isWeekend}):`, match ? match.HoursWorked : 'No match');
+
+            if (!match) {
+              console.warn(`No match found for date: ${targetDate}`);
+              return isWeekend ? 0 : null; // Return 0 for weekends, null for other missing days
+            }
+
+            // Return the hours worked as a number
+            return match.HoursWorked;
           });
 
-          const total = daily.reduce((a, b) => a + b, 0);
+
+          const total = daily.filter(h => h !== null).reduce((a, b) => (a ?? 0) + (b ?? 0), 0) as number;
+          console.log(`Total hours for ${emp.EmployeeName}:`, daily, total);
 
           timeSheet.push({ employeeName: emp.EmployeeName, dailyHours: daily, total });
         }
@@ -98,6 +126,7 @@ export class EdwComponent implements OnInit {
       return projectMatch && monthMatch;
     });
   }
+
 
   generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;
