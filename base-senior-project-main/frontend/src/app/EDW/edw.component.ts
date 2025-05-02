@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { getAllProjects, Project } from '../utility/projects';
 import { getAllEmployees, Employee } from '../utility/employee';
-import { getAllDays, Day } from '../utility/days';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -13,11 +12,11 @@ import html2canvas from 'html2canvas';
 export class EdwComponent implements OnInit {
   months = ['January 2024', 'February 2024', 'March 2024', 'April 2024'];
   projects: Project[] = [];
-  allDays: Day[] = [];
   groupedTimeSheets: {
     projectName: string;
     month: string;
     daysInMonth: number[];
+    weekends: Set<number>;
     timeSheet: {
       employeeName: string;
       dailyHours: (number | null)[];
@@ -36,7 +35,6 @@ export class EdwComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.projects = await getAllProjects();
     const allEmployees = await getAllEmployees();
-    this.allDays = await getAllDays();
 
     for (const project of this.projects) {
       const employees = allEmployees.filter(e =>
@@ -51,68 +49,40 @@ export class EdwComponent implements OnInit {
         const days = new Date(year, monthIndex + 1, 0).getDate();
         const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
 
-        // Log for debugging
-        console.log(`Processing ${monthName} ${year}:`, {
-          monthIndex,
-          days,
-          daysInMonth
-        });
+
+        const weekends = new Set<number>(
+          daysInMonth.filter(day => {
+            const d = new Date(year, monthIndex, day);
+            return d.getDay() === 0 || d.getDay() === 6;
+          })
+        );
+
 
         const timeSheet = [];
 
         for (const emp of employees) {
-          const logs = this.allDays.filter(
-            (d) =>
-              d &&
-              d.EmployeeID != null &&
-              d.ProjectID != null &&
-              d.date &&
-              String(d.EmployeeID) === String(emp.EmployeeID) &&
-              d.ProjectID === project.ProjectID
-          );
 
-          console.log(`Logs for ${emp.EmployeeName} in ${project.ProjectName}:`, logs);
-
-          const daily = daysInMonth.map((day) => {
-            // Create date object with proper month index (0-11)
+          const daily = daysInMonth.map(day => {
             const dateObj = new Date(year, monthIndex, day);
-            const targetDate = dateObj.toISOString().split('T')[0]; // Get YYYY-MM-DD format
-            const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6; // 0 = Sunday, 6 = Saturday
-
-            // Log for debugging
-            console.log(`Processing day ${day}:`, {
-              targetDate,
-              isWeekend,
-              dayOfWeek: dateObj.getDay()
-            });
-
-            const match = logs.find((d) => {
-              if (!d.date) return false;
-              return d.date.slice(0, 10) === targetDate; // Compare date strings directly
-            });
-
-            console.log(`Checking date ${targetDate} (Weekend: ${isWeekend}):`, match ? match.HoursWorked : 'No match');
-
-            if (!match) {
-              console.warn(`No match found for date: ${targetDate}`);
-              return isWeekend ? 0 : null; // Return 0 for weekends, null for other missing days
-            }
-
-            // Return the hours worked as a number
-            return match.HoursWorked;
+            const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
+            return isWeekend ? 0 : Math.floor(Math.random() * 9); // Hours 0-8
           });
 
+          const total = daily.reduce((sum, h) => sum + h, 0);
 
-          const total = daily.filter(h => h !== null).reduce((a, b) => (a ?? 0) + (b ?? 0), 0) as number;
-          console.log(`Total hours for ${emp.EmployeeName}:`, daily, total);
 
-          timeSheet.push({ employeeName: emp.EmployeeName, dailyHours: daily, total });
+          timeSheet.push({
+            employeeName: emp.EmployeeName,
+            dailyHours: daily,
+            total
+          });
         }
 
         this.groupedTimeSheets.push({
           projectName: project.ProjectName,
           month,
           daysInMonth,
+          weekends,
           timeSheet
         });
       }
@@ -148,7 +118,7 @@ export class EdwComponent implements OnInit {
         const imageData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-        const pdfWidth = pdf.internal.pageSize.getWidth()*.7;
+        const pdfWidth = pdf.internal.pageSize.getWidth() * 0.7;
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         const imgWidth = pdfWidth;
@@ -157,11 +127,9 @@ export class EdwComponent implements OnInit {
         let heightLeft = imgHeight;
         let position = 0;
 
-        // First page
         pdf.addImage(imageData, 'PNG', 0, position, imgWidth, imgHeight);
         heightLeft -= pdfHeight;
 
-        // Add more pages if needed
         while (heightLeft > 0) {
           position = heightLeft - imgHeight;
           pdf.addPage();
@@ -175,6 +143,4 @@ export class EdwComponent implements OnInit {
         console.error('Error generating PDF:', error);
       });
   }
-
-
 }
