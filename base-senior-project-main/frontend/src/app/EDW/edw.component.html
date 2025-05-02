@@ -1,6 +1,14 @@
 <!-- Dropdown Filters -->
 <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center;">
   <label>
+    Month:
+    <select [(ngModel)]="selectedMonth">
+      <option value="">All Months</option>
+      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
+    </select>
+  </label>
+
+  <label>
     Project:
     <select [(ngModel)]="selectedProject">
       <option value="">All Projects</option>
@@ -9,21 +17,18 @@
       </option>
     </select>
   </label>
-
-  <label>
-    Month:
-    <select [(ngModel)]="selectedMonth">
-      <option value="">All Months</option>
-      <option *ngFor="let m of months" [value]="m">{{ m }}</option>
-    </select>
-  </label>
 </div>
 
 <!-- Table Container -->
 <div class="edw-container">
   <div #innerContainer class="inner-container">
+    <div *ngIf="filteredGroupedTimeSheets.length === 0">
+      <p>No data available for the selected filters.</p>
+    </div>
+
     <div *ngFor="let group of filteredGroupedTimeSheets">
-      <h3>{{ group.projectName }} - {{ group.month }}</h3>
+      <h3 style="margin-bottom: 0.5rem;">{{ group.projectName }} - {{ group.month }}</h3>
+
       <table>
         <thead>
         <tr>
@@ -35,7 +40,10 @@
         <tbody>
         <tr *ngFor="let row of group.timeSheet">
           <td>{{ row.employeeName }}</td>
-          <td *ngFor="let h of row.dailyHours" [ngClass]="{'weekend': h === 0}">{{ h !== null ? h : '-' }}</td>
+          <td *ngFor="let h of row.dailyHours; let i = index"
+              [ngClass]="{ 'weekend': group.weekends?.has(group.daysInMonth[i]) }">
+            {{ group.weekends?.has(group.daysInMonth[i]) ? '-' : h }}
+          </td>
           <td>{{ row.total }}</td>
         </tr>
         </tbody>
@@ -57,6 +65,6 @@
 </div>
 
 <!-- PDF Button -->
-<div class="button-container">
+<div class="button-container" style="margin-top: 20px;">
   <button class="button-85" (click)="generatePDF()">Download PDF</button>
 </div>
