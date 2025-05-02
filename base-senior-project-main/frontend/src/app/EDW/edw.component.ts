@@ -101,6 +101,7 @@ export class EdwComponent implements OnInit {
 
   generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;
+
     if (!containerElement) {
       console.error('Error: EDW inner container element not found.');
       return;
@@ -108,27 +109,43 @@ export class EdwComponent implements OnInit {
 
     html2canvas(containerElement, {
       scale: 2,
-      scrollX: -window.scrollX,
+      scrollX: 0,
       scrollY: -window.scrollY,
-      useCORS: true
+      useCORS: true,
+      windowWidth: containerElement.scrollWidth,
+      windowHeight: containerElement.scrollHeight
     })
       .then((canvas) => {
-        const image = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: 'mm',
-          format: 'a4'
-        });
+        const imageData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('landscape', 'mm', 'a4');
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+        const pdfWidth = pdf.internal.pageSize.getWidth()*.7;
+        const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        pdf.addImage(image, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        const imgWidth = pdfWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // First page
+        pdf.addImage(imageData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        // Add more pages if needed
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imageData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
         pdf.save('EDW-Timesheet.pdf');
       })
       .catch((error) => {
         console.error('Error generating PDF:', error);
       });
   }
+
 
 }
