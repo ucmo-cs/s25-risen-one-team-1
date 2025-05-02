@@ -19,7 +19,7 @@ export class EdwComponent implements OnInit {
     weekends: Set<number>;
     timeSheet: {
       employeeName: string;
-      dailyHours: number[];
+      dailyHours: (number | null)[];
       total: number;
     }[];
   }[] = [];
@@ -44,9 +44,11 @@ export class EdwComponent implements OnInit {
       for (const month of this.months) {
         const [monthName, yearStr] = month.split(' ');
         const year = parseInt(yearStr, 10);
-        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+        const date = new Date(`${monthName} 1, ${year}`);
+        const monthIndex = date.getMonth();
         const days = new Date(year, monthIndex + 1, 0).getDate();
         const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
+
 
         const weekends = new Set<number>(
           daysInMonth.filter(day => {
@@ -55,9 +57,11 @@ export class EdwComponent implements OnInit {
           })
         );
 
+
         const timeSheet = [];
 
         for (const emp of employees) {
+
           const daily = daysInMonth.map(day => {
             const dateObj = new Date(year, monthIndex, day);
             const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
@@ -65,6 +69,7 @@ export class EdwComponent implements OnInit {
           });
 
           const total = daily.reduce((sum, h) => sum + h, 0);
+
 
           timeSheet.push({
             employeeName: emp.EmployeeName,
@@ -91,6 +96,7 @@ export class EdwComponent implements OnInit {
       return projectMatch && monthMatch;
     });
   }
+
 
   generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;

@@ -35,7 +35,7 @@
         <tbody>
         <tr *ngFor="let row of group.timeSheet">
           <td>{{ row.employeeName }}</td>
-          <td *ngFor="let h of row.dailyHours">{{ h }}</td>
+          <td *ngFor="let h of row.dailyHours" [ngClass]="{'weekend': h === 0}">{{ h !== null ? h : '-' }}</td>
           <td>{{ row.total }}</td>
         </tr>
         </tbody>
