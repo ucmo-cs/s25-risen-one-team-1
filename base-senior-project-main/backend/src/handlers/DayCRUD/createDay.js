@@ -35,6 +35,13 @@
          }
      }
  
+    if (typeof Date !== 'string' || typeof EmployeeID !== 'number' || typeof ProjectID !== 'number' || typeof HoursWorked !== 'number') {
+        return {
+            statusCode: 400, // 400: bad request
+            body: JSON.stringify("Bad Request, invalid data types. Date must be a string, EmployeeID and ProjectID must be integers, and HoursWorked must be a number.")
+        };
+}
+
      try{
          await dynamoDb.put(params).promise();
          
