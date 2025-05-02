@@ -19,7 +19,7 @@ export class EdwComponent implements OnInit {
     weekends: Set<number>;
     timeSheet: {
       employeeName: string;
-      dailyHours: (number | null)[];
+      dailyHours: number[];
       total: number;
     }[];
   }[] = [];
@@ -44,11 +44,9 @@ export class EdwComponent implements OnInit {
       for (const month of this.months) {
         const [monthName, yearStr] = month.split(' ');
         const year = parseInt(yearStr, 10);
-        const date = new Date(`${monthName} 1, ${year}`);
-        const monthIndex = date.getMonth();
+        const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
         const days = new Date(year, monthIndex + 1, 0).getDate();
         const daysInMonth = Array.from({ length: days }, (_, i) => i + 1);
-
 
         const weekends = new Set<number>(
           daysInMonth.filter(day => {
@@ -57,19 +55,16 @@ export class EdwComponent implements OnInit {
           })
         );
 
-
         const timeSheet = [];
 
         for (const emp of employees) {
-
           const daily = daysInMonth.map(day => {
             const dateObj = new Date(year, monthIndex, day);
             const isWeekend = dateObj.getDay() === 0 || dateObj.getDay() === 6;
-            return isWeekend ? 0 : Math.floor(Math.random() * 9); // Hours 0-8
+            return isWeekend ? 0 : Math.floor(Math.random() * 9); // 0–8 hours
           });
 
           const total = daily.reduce((sum, h) => sum + h, 0);
-
 
           timeSheet.push({
             employeeName: emp.EmployeeName,
@@ -90,13 +85,23 @@ export class EdwComponent implements OnInit {
   }
 
   get filteredGroupedTimeSheets() {
-    return this.groupedTimeSheets.filter(sheet => {
-      const projectMatch = this.selectedProject ? sheet.projectName === this.selectedProject : true;
-      const monthMatch = this.selectedMonth ? sheet.month === this.selectedMonth : true;
-      return projectMatch && monthMatch;
-    });
-  }
+    const month = this.selectedMonth.trim().toLowerCase();
+    const project = this.selectedProject.trim().toLowerCase();
 
+    const filtered = this.groupedTimeSheets
+      .filter(sheet => {
+        const monthMatch = month ? sheet.month.toLowerCase() === month : true;
+        return monthMatch;
+      })
+      .filter(sheet => {
+        const projectMatch = project ? sheet.projectName.toLowerCase() === project : true;
+        return projectMatch;
+      });
+
+    return filtered.sort((a, b) =>
+      this.months.indexOf(a.month) - this.months.indexOf(b.month)
+    );
+  }
 
   generatePDF(): void {
     const containerElement = this.innerContainer.nativeElement;
